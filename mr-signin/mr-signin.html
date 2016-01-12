@@ -1,0 +1,42 @@
+<link rel="import" href="../../iron-form-csrf/iron-form-csrf.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../paper-styles/shadow.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../gold-email-input/gold-email-input.html">
+
+<dom-module id="mr-signin">
+  <template>
+    <style>
+      :host {
+        display: block;
+        width: 300px;
+        padding: 30px;
+        @apply(--shadow-elevation-16dp);
+        @apply(--paper-font-common-base);
+      }
+    </style>
+
+    <iron-form-csrf id="form" action="/auth/login" method="post">
+      <gold-email-input name="email" label="Email"></gold-email-input>
+      <paper-input name="password" type="password" label="Mot de passe"></paper-input>
+      <paper-button on-tap="submit">Se Connecter</paper-button>
+    </iron-form-csrf>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-signin',
+      listeners: {
+        'iron-overlay-opened': 'refit'
+      },
+      submit: function() {
+        this.$.form.submit();
+      },
+      behaviors: [
+        Polymer.PaperDialogBehavior
+      ]
+    });
+  </script>
+</dom-module>
