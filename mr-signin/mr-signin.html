@@ -4,6 +4,7 @@
 <link rel="import" href="../../paper-input/paper-input.html">
 <link rel="import" href="../../paper-styles/shadow.html">
 <link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../gold-email-input/gold-email-input.html">
 
 <dom-module id="mr-signin">
@@ -22,6 +23,7 @@
     <iron-form-csrf id="form" action="/auth/login" method="post">
       <gold-email-input name="email" label="Email"></gold-email-input>
       <paper-input name="password" type="password" label="Mot de passe"></paper-input>
+      <paper-toggle-button name="remember_me">Se souvenir de moi</paper-toggle-button>
       <paper-button on-tap="submit">Se Connecter</paper-button>
     </iron-form-csrf>
     

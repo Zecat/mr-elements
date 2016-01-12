@@ -24,7 +24,8 @@
     "iron-form-csrf": "Zecat/iron-form-csrf#~1.0.0",
     "paper-button": "PolymerElements/paper-button#~1.0.11",
     "paper-dialog-behavior": "PolymerElements/paper-dialog-behavior#~1.1.0",
-    "paper-styles": "PolymerElements/paper-styles#~1.1.2"
+    "paper-styles": "PolymerElements/paper-styles#~1.1.2",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.14"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
