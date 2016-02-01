@@ -14,19 +14,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>mr-elements Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../../iron-form-csrf/iron-meta-set-token.html">
     <link rel="import" href="../../paper-button/paper-button.html">
+    <link rel="import" href="../../paper-styles/color.html">
+    <link rel="import" href="../../paper-styles/demo-pages.html">
+    <link rel="import" href="../../paper-toast-patterns/paper-toast-patterns.html">
+    <link rel="import" href="../../paper-toast/paper-toast.html">
     <link rel="import" href="mr-register.html">
   </head>
   <body unresolved>
 
-    <mr-register id="register"></mr-register>
-    <paper-button onclick="register()">s'enregistrer</paper-button>
-
-    <script>
-      function register() {
-        document.getElementById('register').open();
+    <style is="custom-style">
+      paper-toast[type="error"] {
+        font-weight: bold;
+        --paper-toast-color: var(--google-red-500);
       }
-    </script>
+      paper-toast[type="info"] {
+        --paper-toast-color: var(--google-blue-500);
+      }
+    </style>
+    
+    <iron-meta-set-token value="tokenValue" name="tokenName"></iron-meta-set-token>
+    <paper-toast-patterns>
+      <paper-toast type="error" text="Une erreur est survenue, veuillez réessayer."></paper-toast>
+      <paper-toast type="info"></paper-toast>
+    </paper-toast-patterns>
+    <mr-register id="register"></mr-register>
 
   </body>
 </html>
