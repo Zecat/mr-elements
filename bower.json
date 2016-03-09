@@ -34,7 +34,9 @@
     "paper-stepper": "polymer-paper-stepper#master",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.0.14",
     "paper-button": "PolymerElements/paper-button#^1.0.11",
-    "paper-date-input": "alexisgeneau/paper-date-input#^1.0.0"
+    "paper-date-input": "alexisgeneau/paper-date-input#^1.0.0",
+    "moment-element": "bendavis78/moment-element#^1.1.0",
+    "paper-fab": "PolymerElements/paper-fab#^1.2.0"
   },
   "devDependencies": {
     "paper-styles": "PolymerElements/paper-styles#~1.1.2",

@@ -1,0 +1,108 @@
+
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../paper-styles/paper-styles.html">
+<link rel="import" href="../../paper-input/paper-textarea.html">
+<link rel="import" href="../../paper-fab/paper-fab.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../moment-element/moment-with-locales-import.html">
+
+<dom-module id="mr-conversation">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        width: 400px;
+        height: 500px;
+        @apply(--layout-vertical);
+        @apply(--paper-font-common-base);
+        background: var(--paper-grey-50);
+        overflow: hidden;
+        border: 1px solid var(--divider-color);
+      }
+      .sended {
+        background: white;
+        @apply(--layout-self-end);
+      }
+      .recieved {
+        background: var(--paper-blue-400);
+        color: white;
+      }
+      .message {
+        padding: 16px;
+        max-width: 300px;
+        border-radius: 3px;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 3px 1px -2px rgba(0, 0, 0, 0.1);
+        margin: 14px;
+      }
+      .hour {
+        font-size: 12px;
+      }
+      .recieved .hour {
+        opacity: 0.7;
+      }
+      .sended .hour {
+        color: var(--paper-grey-400);
+      }
+      #chatBox {
+        height: auto;
+        @apply(--shadow-elevation-12dp);
+        background: white;
+        position: relative;
+      }
+      #chatFlow {
+        @apply(--layout-vertical);
+        overflow: scroll;
+        padding-bottom: 30px;
+      }
+      paper-fab {
+        position: absolute;
+        top: -28px;
+        right: 52px;
+        opacity: 0.94;
+        transition: box-shadow 0.2s;
+      }
+      paper-textarea {
+        padding: 20px;
+        --paper-input-container-color: var(--paper-grey-200);
+        transition: height 0.5s;
+      }
+    </style>
+    <div id="chatFlow">
+      <template is="dom-repeat" items="[[conversation]]">
+        <div class$="message {{_getUserClass(item.sender_ref)}}">
+          <span>[[item.text]]</span>
+          <span class="hour">{{_getHour(item.date)}}</span>
+        </div>
+        <template is="dom-if" if=""></template>
+      </template>
+    </div>
+    <div id="chatBox">
+      <paper-fab elevation="3" animated icon="send"></paper-fab>
+      <paper-textarea max-rows="9" placeholder="Entrez votre message…"></paper-textarea>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-conversation',
+
+      properties: {
+        conversation: {
+          type: Object
+        },
+        userRef:  {
+          type: String
+        }
+      },
+
+      _getUserClass: function(sender_ref) {
+        return sender_ref == this.userRef ? 'sended' : 'recieved';
+      },
+
+      _getHour: function(date) {
+        return moment(date).format("HH:mm");
+      }
+
+    });
+  </script>
+</dom-module>
