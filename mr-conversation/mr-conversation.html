@@ -5,6 +5,9 @@
 <link rel="import" href="../../paper-fab/paper-fab.html">
 <link rel="import" href="../../paper-input/paper-textarea.html">
 <link rel="import" href="../../paper-styles/paper-styles.html">
+<link rel="import" href="../../iron-form-csrf/iron-form-csrf.html">
+<link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../neon-scroll-animations/neon-scroll-animations.html">
 
 <dom-module id="mr-conversation">
   <template>
@@ -55,11 +58,16 @@
         padding-bottom: 30px;
       }
       paper-fab {
-        position: absolute;
-        top: -28px;
-        right: 52px;
-        opacity: 0.94;
-        transition: box-shadow 0.2s;
+        --paper-fab: {
+          opacity: 0.94;
+          position: absolute;
+          top: -28px;
+          right: 52px;
+          transition: all 0.2s;
+        };
+        --paper-fab-disabled: {
+          opacity: 0.7;
+        };
       }
       paper-textarea {
         padding: 20px;
@@ -87,13 +95,20 @@
       </template>
     </div>
     <div id="chatBox">
-      <paper-fab animated icon="send"></paper-fab>
-      <paper-textarea max-rows="9" placeholder="Entrez votre message…"></paper-textarea>
+      <paper-fab disabled="[[!message]]" icon="send" on-tap="_sendMessage"></paper-fab>
+      <iron-form-csrf id="messageForm" action="" method="post"
+          on-iron-form-response="_messageFormResponseHandler">
+      <paper-textarea id="textarea" minlength="1" value="{{message}}" max-rows="9" placeholder="Entrez votre message…"></paper-textarea>
+      </iron-form-csrf>
     </div>
   </template>
   <script>
     Polymer({
       is: 'mr-conversation',
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
 
       properties: {
         conversation: {
@@ -101,6 +116,21 @@
         },
         userRef:  {
           type: String
+        },
+        message: {
+          type: String,
+          value: ''
+        },
+        animationConfig: {
+          value: function() {
+            return {
+              'scroll-bottom': {
+                name: 'neon-scroll-animations',
+                node: this.$.chatFlow,
+                yShift: 'bottom'
+              }
+            };
+          }
         }
       },
 
@@ -118,6 +148,24 @@
 
       _formatDate: function(date) {
         return moment(date).format('ll');
+      },
+
+      _sendMessage: function() {
+        this.$.messageForm.submit();
+      },
+
+      _messageFormResponseHandler: function(e) {
+        console.log(e);
+        this.push('conversation', {
+          "sender_ref": "R7UHS9JJS0",
+          "recipient_ref": "LJD087DJD8", 
+          "date": new Date(),
+          "text": this.message
+        });
+        this.$.textarea.value = '';
+        this.async(function() {
+          this.playAnimation('scroll-bottom');
+        });
       }
 
     });
