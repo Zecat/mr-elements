@@ -1,0 +1,59 @@
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-swipeable-container/iron-swipeable-container.html">
+
+<dom-module id="mr-notifications">
+  <template>
+
+    <style>
+    .swipe {
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: default;
+    }
+    </style>
+
+
+  <div id="notificationFlow">
+  <iron-swipeable-container on-iron-swipe="_elementSwiped">
+    <template id="domRepeat" is="dom-repeat" items="[[notifications]]">
+      <template is="dom-if" if="{{item.seen}}">
+        <div class="notification seen swipe">
+          <img src="[[item.icon]]" class="icon">
+          <span class="title">[[item.title]]</span>
+          <span class="text">[[item.text]]</span>
+          <span class="date">[[item.date]]</span>
+        </div>
+      </template>
+      <template  is="dom-if" if="{{!item.seen}}">
+        <div class="notification swipe">
+          <img src="[[item.icon]]" class="icon">
+          <span class="title">[[item.title]]</span>
+          <span class="text">[[item.text]]</span>
+          <span class="date">[[item.date]]</span>
+        </div>
+      </template>
+    </template>
+  </iron-swipeable-container>
+  </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'mr-notifications',
+
+      properties: {
+        notifications: {
+          type: Object
+        }
+
+      },
+
+      _elementSwiped: function(){
+        console.log("prout");
+      }
+
+    });
+  </script>
+</dom-module>
