@@ -20,7 +20,7 @@
     <template id="domRepeat" is="dom-repeat" items="[[notifications]]">
       <template is="dom-if" if="{{item.seen}}">
         <div class="notification seen swipe">
-          <img src="[[item.icon]]" class="icon">
+          <img src="[[item.icon]]" class="icon" draggable="false">
           <span class="title">[[item.title]]</span>
           <span class="text">[[item.text]]</span>
           <span class="date">[[item.date]]</span>
@@ -28,7 +28,7 @@
       </template>
       <template  is="dom-if" if="{{!item.seen}}">
         <div class="notification swipe">
-          <img src="[[item.icon]]" class="icon">
+          <img src="[[item.icon]]" class="icon" draggable="false">
           <span class="title">[[item.title]]</span>
           <span class="text">[[item.text]]</span>
           <span class="date">[[item.date]]</span>
