@@ -1,0 +1,249 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-selector/iron-selector.html">
+<link rel="import" href="../../paper-material/paper-material.html">
+<link rel="import" href="../../iron-image/iron-image.html">
+<link rel="import" href="../../neon-animation/animations/transform-animation.html">
+<link rel="import" href="../../neon-animation/animations/cascaded-animation.html">
+<link rel="import" href="../../neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../neon-animation/animations/slide-from-bottom-animation.html">
+<link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../paper-styles/color.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="masonry-import.html">
+
+<dom-module id="mr-housing-page">
+  <template>
+    <style>
+      /* TODO : Use % instead of vh/vw*/
+      :host {
+        display: block;
+        box-sizing: border-box;
+        height: 100vh;
+        @apply(--layout-scroll);
+      }
+      :host.overflow-hidden {
+        overflow: hidden;
+      }
+      #masonry {
+        transition: opacity 0.5s;
+        margin-bottom: 200px;
+        box-sizing: border-box;
+        margin: 5px;
+      }
+      #background {
+        width: 100%;
+        position: relative;
+        height: 70vh;
+        will-change: height;
+        transition: height 0.5s;
+        overflow: hidden;
+      }
+      #background.iron-selected {
+        height: 100vh;
+        @apply(--layout-scroll);
+      }
+      #headerImage {
+        width: 100%;
+        height: auto;
+        /* correct iron-image weird margin */
+        margin-bottom: -4px;
+      }
+      #headerImage ::content img {
+        width: 100%;
+      }
+      iron-image {
+        background: white;
+      }
+      .masonry-item {
+        width: 33.33%;
+        height: auto;
+        padding: 5px;
+        box-sizing: border-box;
+        opacity: 0;
+      }
+      .masonry-item ::content img {
+        width: 100% !important;
+      }
+      paper-material {
+        width: 80%;
+        height: 1000px;
+        margin: auto;
+        margin-top: -100px;
+        @apply(--layout-vertical);
+      }
+      #header {
+        height: 100px;
+        background: -webkit-linear-gradient(rgba(255,255,255,0.5) 0%, rgba(245,245,245,1) 100%);
+        background: -o-linear-gradient(rgba(255,255,255,0.5) 0%, rgba(245,245,245,1) 100%);
+        background: linear-gradient(rgba(255,255,255,0.5) 0%, rgba(245,245,245,1) 100%);
+      }
+      h1 {
+        padding: 35px;
+        @apply(--paper-font-title);
+        margin: 0;
+      }
+      .masonry-sizer {
+        width: 33.33%;
+      }
+      @media all and (max-width: 600px) {
+        .masonry-sizer {
+          width: 50%;
+        }
+        #masonry {
+          margin: 2px;
+        }
+        .masonry-item {
+          padding: 2px;
+          width: 50%;
+        }
+      }
+    </style>
+    <iron-selector selected="{{selectedLayout}}">
+      <div id="background"> 
+        <iron-image id="headerImage" src="[[housing.src.0]]" preload fade loaded="{{headerImageLoaded}}"></iron-image>
+        <div id="masonry">
+          <div class="masonry-sizer"></div>
+          <template is="dom-repeat" items="[[masonrySrcArray]]">
+            <iron-image class="masonry-item" src="[[item]]" preload on-loaded-changed="_masonryImageLoaded"></iron-image>
+          </template>
+        </div>
+      </div>
+      <paper-material elevation="1">
+        <div id="header">
+          <h1>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</h1>
+        </div>
+      </paper-material>
+    </iron-selector>
+    
+
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-housing-page',
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      listeners: {
+        'neon-animation-finish': 'animationFinished',
+        'iron-resize': '_resizeHandler'
+      },
+
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              'masonry-cascade': [{
+                name: 'cascaded-animation',
+                animation: 'slide-from-bottom-animation',
+                nodeDelay: 100
+              },{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                nodeDelay: 100
+              }]
+            }
+          }
+        },
+        headerImageLoaded: {
+          type: Boolean,
+          value: false,
+          observer: '_headerImageLoadedChanged'
+        },
+        selectedLayout: {
+          type: Number,
+          value: 1,
+          observer: '_selectedLayoutChanged'
+        },
+        housing: Object,
+        masonrySrcArray: {
+          type: Array,
+        },
+        loadingImgNumber: {
+          type: Number,
+          value: 0
+        }
+      },
+
+      animationFinished: function(e, data) {
+        switch (data.animation) {
+          case 'masonry-cascade':
+            for (image of Polymer.dom(this.$.masonry).querySelectorAll('iron-image')) {
+              image.style.opacity = 1;
+            }
+        }
+      },
+
+      /**
+       * FROM https://github.com/PolymerElements/paper-scroll-header-panel/blob/master/paper-scroll-header-panel.html
+       */
+      _scroll:function(element, top, duration) {
+        // TODO: use CSS scroll-behavior once it ships in Chrome.
+        var easingFn = function easeOutQuad(t, b, c, d) {
+          t /= d;
+          return -c * t*(t-2) + b;
+        };
+        var animationId = Math.random();
+        var startTime = Date.now();
+        var currentScrollTop = element.scrollTop;
+        var deltaScrollTop = top - currentScrollTop;
+        this._currentAnimationId = animationId;
+        (function updateFrame() {
+          var now = Date.now();
+          var elapsedTime = now - startTime;
+          if (elapsedTime > duration) {
+            element.scrollTop = top;
+          } else if (this._currentAnimationId === animationId) {
+            element.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+            requestAnimationFrame(updateFrame.bind(this));
+          }
+        }).call(this);
+      },
+
+      _headerImageLoadedChanged: function(headerImageLoaded) {
+        if (headerImageLoaded) {
+          // scroll in the background to align the header image with the bottom of the background box
+          this._scroll(this.$.background, this.$.headerImage.clientHeight - window.innerHeight*0.7, 700);
+          // create the masonry src array, removing the header image
+          var masonrySrcArray = this.housing.src;
+          masonrySrcArray.shift();
+          this.masonrySrcArray = masonrySrcArray;
+        }
+      },
+
+      _selectedLayoutChanged: function(layout) {
+        // layout -> 0: background selected, 1: main selected
+        if (!layout) {
+          // scroll main to top
+          this._scroll(this, 0, 500);
+        }
+        // TODO: simplify this using 'iron-selected' class
+        this.toggleClass('scroll', layout);
+        this.toggleClass('overflow-hidden', !layout);
+      },
+
+      _masonryImageLoaded:function(e) {
+        if (e.detail.value) {
+          this.loadingImgNumber--;
+        } else {
+          this.loadingImgNumber++;
+        }
+        if (!this.loadingImgNumber) {
+          this._masonryLayout();
+        }
+      },
+
+      _masonryLayout: function() {
+        this.masonry = new Masonry( this.$.masonry, {
+          itemSelector: '.masonry-item',
+          columnWidth: '.masonry-sizer'
+        });
+        var items = Polymer.dom(this.$.masonry).querySelectorAll('iron-image');
+        this.animationConfig['masonry-cascade'][0].nodes = this.animationConfig['masonry-cascade'][1].nodes = items;
+        this.playAnimation('masonry-cascade', {animation: 'masonry-cascade'});
+      }
+      
+    });
+  </script>
+</dom-module>
