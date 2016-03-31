@@ -1,16 +1,9 @@
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-selector/iron-selector.html">
 <link rel="import" href="../../paper-material/paper-material.html">
-<link rel="import" href="../../iron-image/iron-image.html">
-<link rel="import" href="../../neon-animation/animations/transform-animation.html">
-<link rel="import" href="../../neon-animation/animations/cascaded-animation.html">
-<link rel="import" href="../../neon-animation/animations/fade-in-animation.html">
-<link rel="import" href="../../neon-animation/animations/slide-from-bottom-animation.html">
-<link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../../paper-styles/color.html">
 <link rel="import" href="../../paper-styles/typography.html">
 <link rel="import" href="../../iron-overlay-slideshow/iron-overlay-slideshow.html">
-<link rel="import" href="masonry-import.html">
+<link rel="import" href="mr-masonry-wall.html">
 
 <dom-module id="mr-housing-page">
   <template>
@@ -31,7 +24,7 @@
         box-sizing: border-box;
         margin: 5px;
       }
-      #background {
+      #masonryBackground {
         width: 100%;
         position: relative;
         height: 70vh;
@@ -39,32 +32,9 @@
         transition: height 0.5s;
         overflow: hidden;
       }
-      #background.iron-selected {
+      #masonryBackground.iron-selected {
         height: 100vh;
         @apply(--layout-scroll);
-      }
-      #headerImage {
-        width: 100%;
-        height: auto;
-        /* correct iron-image weird margin */
-        margin-bottom: -4px;
-      }
-      #headerImage ::content img {
-        width: 100%;
-      }
-      iron-image {
-        cursor: pointer;
-        background: white;
-      }
-      .masonry-item {
-        width: 33.33%;
-        height: auto;
-        padding: 5px;
-        box-sizing: border-box;
-        opacity: 0;
-      }
-      .masonry-item ::content img {
-        width: 100% !important;
       }
       paper-material {
         width: 80%;
@@ -84,108 +54,34 @@
         @apply(--paper-font-title);
         margin: 0;
       }
-      .masonry-sizer {
-        width: 33.33%;
-      }
-      @media all and (max-width: 600px) {
-        .masonry-sizer {
-          width: 50%;
-        }
-        #masonry {
-          margin: 2px;
-        }
-        .masonry-item {
-          padding: 2px;
-          width: 50%;
-        }
-      }
       #main:not(.iron-selected) {
         cursor: pointer;
       }
-      
     </style>
     
     <iron-selector selected="{{selectedLayout}}">
-      <div id="background"> 
-        <iron-image id="headerImage" src="[[housing.src.0]]" preload fade loaded="{{headerImageLoaded}}" on-tap="_openSlideshow"></iron-image>
-        <div id="masonry">
-          <div class="masonry-sizer"></div>
-          <template is="dom-repeat" items="[[masonrySrcArray]]">
-            <iron-image class="masonry-item" src="[[item]]" preload on-loaded-changed="_masonryImageLoaded" on-tap="_openSlideshow"></iron-image>
-          </template>
-        </div>
-      </div>
+      <mr-masonry-wall id="masonryBackground" src-array="[[housing.src]]" on-image-tap="_imageTapped" on-header-image-loaded="_headerImageLoaded"></mr-masonry-wall>
       <paper-material elevation="1" id="main">
         <div id="header">
           <h1>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</h1>
         </div>
       </paper-material>
-      <iron-overlay-slideshow with-backdrop id="slideshow" src-array="[[housing.src]]">
-    </iron-overlay-slideshow>
     </iron-selector>
-    
+    <iron-overlay-slideshow with-backdrop id="slideshow" src-array="[[housing.src]]">
+    </iron-overlay-slideshow>
 
   </template>
   <script>
     Polymer({
       is: 'mr-housing-page',
 
-      behaviors: [
-        Polymer.NeonAnimationRunnerBehavior
-      ],
-
-      listeners: {
-        'neon-animation-finish': 'animationFinished'
-      },
-
       properties: {
-        animationConfig: {
-          value: function() {
-            return {
-              'masonry-cascade': [{
-                name: 'cascaded-animation',
-                animation: 'slide-from-bottom-animation',
-                nodeDelay: 100
-              },{
-                name: 'cascaded-animation',
-                animation: 'fade-in-animation',
-                nodeDelay: 100
-              }]
-            }
-          }
-        },
-        headerImageLoaded: {
-          type: Boolean,
-          value: false,
-          observer: '_headerImageLoadedChanged'
-        },
         selectedLayout: {
           type: Number,
           value: 1,
           observer: '_selectedLayoutChanged'
         },
-        housing: Object,
-        masonrySrcArray: {
-          type: Array,
-          computed: '_computeMasonrySrcArray(housing.src)'
-        },
-        loadingImgNumber: {
-          type: Number,
-          value: 0
-        }
-      },
-
-      animationFinished: function(e, data) {
-        switch (data.animation) {
-          case 'masonry-cascade':
-            for (image of Polymer.dom(this.$.masonry).querySelectorAll('iron-image')) {
-              image.style.opacity = 1;
-            }
-        }
-      },
-
-      _computeMasonrySrcArray: function(src) {;
-        return src.slice(1);
+        housing: Object
       },
 
       /**
@@ -214,10 +110,15 @@
         }).call(this);
       },
 
-      _headerImageLoadedChanged: function(headerImageLoaded) {
-        if (headerImageLoaded) {
-          // scroll in the background to align the header image with the bottom of the background box
-          this._scroll(this.$.background, this.$.headerImage.clientHeight - window.innerHeight*0.7, 700);
+      _headerImageLoaded: function() {
+        // scroll in the background to align the header image with the bottom of the background box
+        this._scroll(this.$.masonryBackground, this.$.masonryBackground.$.headerImage.clientHeight - window.innerHeight*0.7, 700);
+      },
+
+      _imageTapped: function(e) {
+        if (!this.selectedLayout) {
+          this.$.slideshow.selected = e.detail.index;
+          this.$.slideshow.open();
         }
       },
 
@@ -230,34 +131,6 @@
         // TODO: simplify this using 'iron-selected' class
         this.toggleClass('scroll', layout);
         this.toggleClass('overflow-hidden', !layout);
-      },
-
-      _masonryImageLoaded:function(e) {
-        if (e.detail.value) {
-          this.loadingImgNumber--;
-        } else {
-          this.loadingImgNumber++;
-        }
-        if (!this.loadingImgNumber) {
-          this._masonryLayout();
-        }
-      },
-
-      _masonryLayout: function() {
-        this.masonry = new Masonry( this.$.masonry, {
-          itemSelector: '.masonry-item',
-          columnWidth: '.masonry-sizer'
-        });
-        var items = Polymer.dom(this.$.masonry).querySelectorAll('iron-image');
-        this.animationConfig['masonry-cascade'][0].nodes = this.animationConfig['masonry-cascade'][1].nodes = items;
-        this.playAnimation('masonry-cascade', {animation: 'masonry-cascade'});
-      },
-
-      _openSlideshow: function(e) {
-        if (!this.selectedLayout) {
-          this.$.slideshow.selected = e.model ? (e.model.__data__.index+1) : 0;
-          this.$.slideshow.open();
-        }
       }
       
     });
