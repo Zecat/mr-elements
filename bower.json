@@ -39,10 +39,11 @@
     "paper-fab": "PolymerElements/paper-fab#^1.2.0",
     "neon-scroll-animations": "^0.1.0",
     "iron-swipeable-container": "PolymerElements/iron-swipeable-container#^1.0.2",
-    "masonry": "^4.0.0"
+    "masonry": "^4.0.0",
+    "iron-overlay-slideshow": "Zecat/iron-overlay-slideshow#^0.1.0"
   },
   "devDependencies": {
-    "paper-styles": "PolymerElements/paper-styles#~1.1.2",
+    "paper-styles": "PolymerElements/paper-styles#^1.1.2",
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
     "web-component-tester": "^3.4.0"
   }
