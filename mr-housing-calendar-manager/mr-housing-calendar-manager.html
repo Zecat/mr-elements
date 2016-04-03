@@ -1,0 +1,200 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../iron-selector/iron-selector.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-icons/editor-icons.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../paper-fab/paper-fab.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../paper-styles/color.html">
+<link rel="import" href="../../paper-styles/shadow.html">
+<link rel="import" href="../../paper-slider/paper-slider.html">
+<link rel="import" href="../../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../../neon-animation/neon-animatable.html">
+<link rel="import" href="../../neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../neon-animation/animations/slide-from-bottom-animation.html">
+<link rel="import" href="../../neon-animation/animations/slide-down-animation.html">
+<link rel="import" href="../../neon-animation/animations/scale-down-animation.html">
+<link rel="import" href="../../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../neon-animation/animations/scale-up-animation.html">
+
+<dom-module id="mr-housing-calendar-manager">
+  <template>
+    <style include="iron-flex iron-flex-alignment iron-positioning">
+      :host {
+        display: block;
+        box-sizing: border-box;
+        @apply(--paper-font-common-base);
+      }
+      #calendar {
+        @apply(--layout-fit);
+        height: 1000px;
+        background: #FAFAFA;
+      }
+      paper-fab {
+        transition: box-shadow 0.3s;
+        pointer-events: auto;
+        opacity: 0.96;
+      }
+      #fabsLayer {
+        @apply(--layout-around-justified);
+        @apply(--layout-horizontal);
+        pointer-events: none;
+        padding: 0 20px;
+        height: 120px;
+      }
+      #priceLayer {
+        background: var(--paper-grey-100);
+        @apply(--shadow-elevation-2dp);
+        @apply(--layout-vertical);
+        height: 155px;
+      }
+      .uiLayer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: initial;
+        @apply(--layout-center);
+      }
+      #priceDone {
+        position: absolute;
+        top: -25px;
+        right: 50px;
+      }
+      paper-slider {
+        width: 100%;
+      }
+      #priceInput {
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 10px;
+        width: 50px;
+        text-align: center;
+        @apply(--layout-self-start);
+      }
+    </style>
+    <paper-header-panel class="flex">
+      <paper-toolbar>
+        <paper-icon-button icon="close"></paper-icon-button>
+        <div class="flex"></div>
+        <paper-button>{{_computeTopRightButtonText(selecting)}}</paper-button>
+      </paper-toolbar>
+      <div class="fit">
+        <div id="calendar" on-tap="_closePriceLayer"></div>
+        <neon-animated-pages animate-initial-selection selected="[[_selectedUiLayer]]" class="fixed-bottom">
+          <neon-animatable id="fabsLayer" class="uiLayer" animation-config="[[_fabsLayerAnimationConfig]]">
+            <paper-fab mini icon="lock"></paper-fab>
+            <paper-fab icon="editor:attach-money" on-tap="_enterPriceLayer"></paper-fab>
+            <paper-fab mini icon="lock-open"></paper-fab>
+          </neon-animatable>
+          <neon-animatable id="priceLayer" class="uiLayer" animation-config="[[_priceLayerAnimationConfig]]">
+            <div class="layout horizontal center self-start">
+            <paper-input id="priceInput" type="number" value="{{price}}">
+              <div suffix>€</div>
+            </paper-input>
+            <span>par nuit</span>
+            </div>
+            <paper-slider pin min="10" max="75" value="{{price}}"></paper-slider>
+            <paper-fab id="priceDone" icon="done" on-tap="_priceValidated"></paper-fab>
+          </neon-animatable>
+        </neon-animated-pages>
+      </div>
+    </paper-header-panel>
+  </template>
+  <script>
+    Polymer({
+
+      is: 'mr-housing-calendar-manager',
+
+      properties: {
+        calendar: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+        selecting: {
+          type: Boolean,
+          value: false,
+          observer: '_selectingChange'
+        },
+        price: {
+          type: Number,
+          value: 30
+        },
+        _selectedUiLayer: {
+          type: Number,
+          value: 0
+        },
+        _priceLayerAnimationConfig: {
+          value: function() {
+            return {
+              'entry': [{
+                name: 'slide-from-bottom-animation',
+                node: this.$.priceLayer
+              }, {
+                name: 'scale-up-animation',
+                node: this.$.priceDone,
+                timing: {delay: 400}
+              }],
+              'exit': [{
+                name: 'slide-down-animation',
+                node: this.$.priceLayer
+              }, {
+                name: 'fade-out-animation',
+                node: this.$.priceDone,
+                timing: {duration: 300}
+              }]
+            }
+          }
+        },
+        _fabsLayerAnimationConfig: {
+          value: function() {
+            return {
+              'entry': {
+                name: 'slide-from-bottom-animation',
+                node: this.$.fabsLayer,
+                timing: {delay: 200}
+              },
+              'exit': {
+                name: 'fade-out-animation',
+                node: this.$.fabsLayer,
+                timing: {duration: 200}
+              }
+            }
+          }
+        }
+      },
+
+      _selectingChange: function(selecting) {
+        if (selecting) {
+          this._selectedUiLayer = 0;
+        } else {
+          this._selectedUiLayer = -1;
+        }
+      },
+
+      _closePriceLayer: function() {
+        this._selectedUiLayer = 0;
+      },
+
+      _enterPriceLayer: function() {
+        this._selectedUiLayer = 1;
+      },
+
+      _priceValidated: function() {
+        this._closePriceLayer();
+        // TODO: price logic validation
+      },
+
+      _computeTopRightButtonText: function(selecting) {
+        return selecting ? "DESELECTIONNER" : "SAUVEGARDER";
+      }
+      
+    });
+  </script>
+</dom-module>

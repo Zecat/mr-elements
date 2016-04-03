@@ -40,7 +40,10 @@
     "neon-scroll-animations": "^0.1.0",
     "iron-swipeable-container": "PolymerElements/iron-swipeable-container#^1.0.2",
     "masonry": "^4.0.0",
-    "iron-overlay-slideshow": "Zecat/iron-overlay-slideshow#^0.1.0"
+    "iron-overlay-slideshow": "Zecat/iron-overlay-slideshow#^0.1.0",
+    "paper-header-panel": "PolymerElements/paper-header-panel#^1.1.5",
+    "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
+    "paper-slider": "PolymerElements/paper-slider#^1.0.10"
   },
   "devDependencies": {
     "paper-styles": "PolymerElements/paper-styles#^1.1.2",
