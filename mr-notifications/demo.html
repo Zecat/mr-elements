@@ -18,7 +18,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="mr-notifications.html">
   </head>
   <body unresolved>
-
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
   <template is="dom-bind" id="template">
     <iron-ajax auto url="notifications.json" last-response="{{notifications}}"></iron-ajax>
     <mr-notifications notifications="[[notifications]]"></mr-notifications>
