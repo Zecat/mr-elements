@@ -9,6 +9,7 @@
 <link rel="import" href="../../neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../neon-animation/animations/cascaded-animation.html">
 <link rel="import" href="../../moment-element/moment-with-locales-import.html">
+<link rel="import" href="../../paper-radio-button/paper-radio-button.html">
 
 <dom-module id="mr-notifications">
   <template>
@@ -20,41 +21,60 @@
         -webkit-user-select: none;
         user-select: none;
         cursor: default;
-        background: var(--paper-grey-50);
+        background: var(--paper-grey-100);
+        transition: background 0.3s;
       }
-      paper-icon-item:not(:last-of-type) {
-        border-bottom: 1px solid var(--paper-grey-100);
+      paper-icon-item.seen:not(:first-of-type) {
+        border-top: 1px solid var(--paper-grey-200);
       }
-      paper-icon-item.seen {
+      paper-icon-item:not(:first-of-type) {
+        border-top: 1px solid var(--paper-grey-100);
+      }
+      .seen + paper-icon-item {
+        border-top: 1px solid var(--paper-grey-200);
+      }
+      paper-icon-item:not(.seen) {
         background: white;
         color: var(--paper-light-blue-500);
       }
-      paper-icon-item:not(.seen){
+      paper-icon-item.seen {
         color: var(--paper-grey-700);
       }
       iron-image {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-      }
-      #first-line {
-        @apply(--layout-horizontal);
-        @apply(--layout-justified);
+        overflow:  hidden;
       }
       #timestamp {
         color: var(--paper-grey-400);
         font-size: 14px;
       }
+      #first-line {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+        transition: color 0.3s;
+      }
+      paper-radio-button {
+        --paper-radio-button-unchecked-color: var(--paper-grey-600);
+        --paper-radio-button-checked-color: var(--paper-grey-500);
+        /*absolute position for ink to overflow*/
+        position: absolute;
+        right: 17px;
+      }
     </style>
     <template id="domRepeat" is="dom-repeat" items="[[notifications]]" on-dom-change="_playEntryAnimation">
       <paper-icon-item class$="{{_getSeenClass(item.seen)}}">
-        <iron-image src="[[item.icon]]" draggable="false" preload sizing="cover" item-icon></iron-image>
+        <iron-image src="{{item.icon}}" draggable="false" preload sizing="cover" item-icon></iron-image>
         <paper-item-body two-line>
           <div id="first-line">
             [[item.title]]
             <div id="timestamp">{{_humanizeDate(item.date)}}</div>
           </div>
-          <div secondary>[[item.text]]</div>
+          <div secondary>
+            [[item.text]]
+            <paper-radio-button checked="{{item.seen}}"></paper-radio-button>
+          </div>
         </paper-item-body>
       </paper-icon-item>
     </template>
@@ -97,7 +117,7 @@
         moment.locale('fr');
       },
 
-      _playEntryAnimation: function() {
+      _playEntryAnimation: function() {console.log("prout");
         this.animationConfig['entry'][0].nodes 
           = this.animationConfig['entry'][1].nodes 
           = Polymer.dom(this.root).querySelectorAll('paper-icon-item');

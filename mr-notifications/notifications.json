@@ -1,58 +1,58 @@
 [
 	{
-		"icon": "http://lorempixel.com/60/60/cats/3/",
-		"title": "Nouveau Message", 
-		"date": "2016-04-09T11:40:04Z",
-		"text": "Harry Covert vous a envoyé un message.",
-		"seen": true
-	},
-	{
-		"icon": "http://lorempixel.com/60/60/cats/8/",
-		"title": "Reservation", 
-		"date": "2016-04-09T11:20:04Z",
-		"text": "Votre réservation à été validée.",
-		"seen": true
-	},
-	{
-		"icon": "http://lorempixel.com/60/60/cats/3/",
-		"title": "Nouveau Message", 
-		"date": "2016-04-09T11:40:04Z",
-		"text": "Harry Covert vous a envoyé un message.",
-		"seen": true
-	},
-	{
-		"icon": "http://lorempixel.com/60/60/cats/8/",
-		"title": "Reservation", 
-		"date": "2016-04-09T11:20:04Z",
-		"text": "Votre réservation à été validée.",
-		"seen": true
-	},
-	{
-		"icon": "http://lorempixel.com/60/60/cats/3/",
+		"icon": "http://codex-themes.com/scalia/wp-content/uploads/2014/07/Faces-400x400px-1_1_07-scalia-testimonial.jpg",
 		"title": "Nouveau Message", 
 		"date": "2016-04-09T11:40:04Z",
 		"text": "Harry Covert vous a envoyé un message.",
 		"seen": false
 	},
 	{
-		"icon": "http://lorempixel.com/60/60/cats/8/",
+		"icon": "https://www.google.fr/images/branding/googleg/1x/googleg_standard_color_128dp.png",
 		"title": "Reservation", 
 		"date": "2016-04-09T11:20:04Z",
 		"text": "Votre réservation à été validée.",
 		"seen": false
 	},
 	{
-		"icon": "http://lorempixel.com/60/60/cats/3/",
+		"icon": "https://www.google.fr/images/branding/googleg/1x/googleg_standard_color_128dp.png",
 		"title": "Nouveau Message", 
 		"date": "2016-04-09T11:40:04Z",
 		"text": "Harry Covert vous a envoyé un message.",
 		"seen": false
 	},
 	{
-		"icon": "http://lorempixel.com/60/60/cats/8/",
+		"icon": "http://www.cise.ufl.edu/~jfan/cap4730_sp09/hw3/face.bmp",
+		"title": "Reservation", 
+		"date": "2016-04-09T11:20:04Z",
+		"text": "Votre réservation à été validée.",
+		"seen": false
+	},
+	{
+		"icon": "https://www.google.fr/images/branding/googleg/1x/googleg_standard_color_128dp.png",
+		"title": "Nouveau Message", 
+		"date": "2016-04-09T11:40:04Z",
+		"text": "Harry Covert vous a envoyé un message.",
+		"seen": true
+	},
+	{
+		"icon": "https://www.google.fr/images/branding/googleg/1x/googleg_standard_color_128dp.png",
 		"title": "Reservation", 
 		"date": "2016-04-09T11:20:04Z",
 		"text": "Votre réservation à été validée.",
 		"seen": true
+	},
+	{
+		"icon": "https://www.google.fr/images/branding/googleg/1x/googleg_standard_color_128dp.png",
+		"title": "Nouveau Message", 
+		"date": "2016-04-09T11:40:04Z",
+		"text": "Harry Covert vous a envoyé un message.",
+		"seen": true
+	},
+	{
+		"icon": "https://www.google.fr/images/branding/googleg/1x/googleg_standard_color_128dp.png",
+		"title": "Reservation", 
+		"date": "2016-04-09T11:20:04Z",
+		"text": "Votre réservation à été validée.",
+		"seen": false
 	}
 ]

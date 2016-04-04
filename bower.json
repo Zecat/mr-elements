@@ -44,7 +44,7 @@
     "paper-header-panel": "PolymerElements/paper-header-panel#^1.1.5",
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
     "paper-slider": "PolymerElements/paper-slider#^1.0.10",
-    "moment-element": "bendavis78/moment-element#^1.1.0"
+    "paper-radio-button": "PolymerElements/paper-radio-button#^1.1.2"
   },
   "devDependencies": {
     "paper-styles": "PolymerElements/paper-styles#^1.1.2",
