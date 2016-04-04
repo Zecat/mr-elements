@@ -1,57 +1,115 @@
 <link rel="import" href="../../iron-icons/iron-icons.html">
-<link rel="import" href="../../iron-swipeable-container/iron-swipeable-container.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../paper-item/paper-icon-item.html">
+<link rel="import" href="../../paper-item/paper-item-body.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../iron-image/iron-image.html">
+<link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="../../neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../neon-animation/animations/cascaded-animation.html">
+<link rel="import" href="../../moment-element/moment-with-locales-import.html">
 
 <dom-module id="mr-notifications">
   <template>
 
     <style>
-    .swipe {
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -webkit-user-select: none;
-      user-select: none;
-      cursor: default;
-    }
+      paper-icon-item {
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: default;
+        background: var(--paper-grey-50);
+      }
+      paper-icon-item:not(:last-of-type) {
+        border-bottom: 1px solid var(--paper-grey-100);
+      }
+      paper-icon-item.seen {
+        background: white;
+        color: var(--paper-light-blue-500);
+      }
+      paper-icon-item:not(.seen){
+        color: var(--paper-grey-700);
+      }
+      iron-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+      #first-line {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+      }
+      #timestamp {
+        color: var(--paper-grey-400);
+        font-size: 14px;
+      }
     </style>
-
-
-  <div id="notificationFlow">
-  <iron-swipeable-container on-iron-swipe="_elementSwiped">
-    <template id="domRepeat" is="dom-repeat" items="[[notifications]]">
-      <template is="dom-if" if="{{item.seen}}">
-        <div class="notification seen swipe">
-          <img src="[[item.icon]]" class="icon" draggable="false">
-          <span class="title">[[item.title]]</span>
-          <span class="text">[[item.text]]</span>
-          <span class="date">[[item.date]]</span>
-        </div>
-      </template>
-      <template  is="dom-if" if="{{!item.seen}}">
-        <div class="notification swipe">
-          <img src="[[item.icon]]" class="icon" draggable="false">
-          <span class="title">[[item.title]]</span>
-          <span class="text">[[item.text]]</span>
-          <span class="date">[[item.date]]</span>
-        </div>
-      </template>
+    <template id="domRepeat" is="dom-repeat" items="[[notifications]]" on-dom-change="_playEntryAnimation">
+      <paper-icon-item class$="{{_getSeenClass(item.seen)}}">
+        <iron-image src="[[item.icon]]" draggable="false" preload sizing="cover" item-icon></iron-image>
+        <paper-item-body two-line>
+          <div id="first-line">
+            [[item.title]]
+            <div id="timestamp">{{_humanizeDate(item.date)}}</div>
+          </div>
+          <div secondary>[[item.text]]</div>
+        </paper-item-body>
+      </paper-icon-item>
     </template>
-  </iron-swipeable-container>
-  </div>
-  </template>
 
+  </template>
   <script>
     Polymer({
       is: 'mr-notifications',
 
-      properties: {
-        notifications: {
-          type: Object
-        }
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
 
+      properties: {
+        notifications: Array,
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': [{
+                name: 'cascaded-animation',
+                animation: 'slide-from-left-animation',
+                timing: {
+                  duration:800, 
+                  delay: 100
+                }
+              },{
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                timing: {
+                  duration:800, 
+                  delay: 100
+                }
+              }]
+            }
+          }
+        }
       },
 
-      _elementSwiped: function(){
-        console.log("prout");
+      ready: function() {
+        moment.locale('fr');
+      },
+
+      _playEntryAnimation: function() {
+        this.animationConfig['entry'][0].nodes 
+          = this.animationConfig['entry'][1].nodes 
+          = Polymer.dom(this.root).querySelectorAll('paper-icon-item');
+        this.playAnimation('entry', {animation: 'entry'});
+      },
+
+      _getSeenClass: function(seen) {
+        return seen ? ' seen': '';
+      },
+
+      _humanizeDate: function(date) {
+        return moment(date).fromNow(true);
       }
 
     });

@@ -28,7 +28,7 @@
     "gold-phone-input": "PolymerElements/gold-phone-input#^1.0.7",
     "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^1.1.2",
     "paper-listbox": "polymerelements/paper-listbox#^1.1.0",
-    "paper-item": "PolymerElements/paper-item#^1.1.3",
+    "paper-item": "PolymerElements/paper-item#^1.1.4",
     "paper-toast": "PolymerElements/paper-toast#^1.1.1",
     "paper-toast-patterns": "Zecat/paper-toast-patterns#^1.0.0",
     "paper-stepper": "polymer-paper-stepper#master",
@@ -43,7 +43,8 @@
     "iron-overlay-slideshow": "Zecat/iron-overlay-slideshow#^0.1.0",
     "paper-header-panel": "PolymerElements/paper-header-panel#^1.1.5",
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
-    "paper-slider": "PolymerElements/paper-slider#^1.0.10"
+    "paper-slider": "PolymerElements/paper-slider#^1.0.10",
+    "moment-element": "bendavis78/moment-element#^1.1.0"
   },
   "devDependencies": {
     "paper-styles": "PolymerElements/paper-styles#^1.1.2",
