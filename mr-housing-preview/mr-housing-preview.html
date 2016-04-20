@@ -1,0 +1,168 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-image/iron-image.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-icons/social-icons.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../iron-icon/iron-icon.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../paper-styles/color.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../paper-styles/shadow.html">
+<link rel="import" href="../../paper-star-rating/paper-star-rating.html">
+
+<dom-module id="mr-housing-preview">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        @apply(--layout-vertical);
+        @apply(--paper-font-common-base);
+        @apply(--shadow-elevation-2dp);
+        @apply(--shadow-transition);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      :host:hover {
+        @apply(--shadow-elevation-3dp);
+      }
+      iron-image {
+        @apply(--layout-fit);
+      }
+      #header {
+        height: 250px;
+        color: white;
+        position: relative;
+      }
+      #title {
+        font-size: 20px;
+        padding-bottom: 3px;
+        @apply(--paper-font-title);
+      }
+      #type {
+        font-size: 16px;
+      }
+      #footer {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+        @apply(--layout-center);
+        height: 70px;
+      }
+      #gradient {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        height: 150px;
+        background: linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+      }
+      #price {
+        padding: 0 15px;
+        font-weight: 100;
+        background: var(--paper-grey-100);
+        color: var(--paper-grey-700);
+        font-size: 30px;
+        height: 100%;
+        @apply(--layout-center-center);
+        @apply(--layout-vertical);
+      }
+      #surface {
+        font-size: 14px;
+        padding-top: 2px;
+      }
+      #iconNumber {
+        color: var(--paper-grey-600);
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        padding-left: 15px;
+      }
+      paper-star-rating {
+        --paper-star-rating-icon-size: 23px;
+        --paper-star-color: var(--paper-yellow-700);
+        @apply(--layout-flex);
+
+      }
+      #vacationers {
+        padding: 5px;
+        font-size: 14px;
+      }
+      #groupIconWrapper {
+        width: 40px;
+        height: 40px;
+        background: var(--paper-grey-200);
+        border-radius: 50%;
+        @apply(--layout-center-center);
+        @apply(--layout-horizontal);
+        --iron-icon-width: 30px;
+        --iron-icon-height: 30px;
+      }
+      #info {
+        @apply(--layout-vertical);
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        padding: 15px;
+      }
+      #favorite {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        transition: color 0.3s;
+        --paper-icon-button-ink-color: white;
+      }
+      .favorite {
+        color: var(--paper-red-600);
+      }
+      iron-image {
+        background: white;
+      }
+    </style>
+    <div id="header">
+      <iron-image src="[[housing.src.0]]" preload fade loaded="{{imageLoaded}}" sizing="cover"></iron-image>
+      <div id="gradient" hidden$="[[!imageLoaded]]"></div>
+      <div id="info">
+        <div id="title">[[housing.title]]</div>
+        <div id="type">[[housing.type]]</div>
+      </div>
+      <paper-icon-button id="favorite" icon="{{_computeIcon(housing.favorite)}}" on-tap="_favoriteTapped"></paper-icon-button>
+    </div>
+    <div id="footer">
+      <div id="iconNumber">
+        <div id="groupIconWrapper"><iron-icon id="groupIcon" icon="social:group"></iron-icon></div>
+        <div id="vacationers">[[housing.vacationers]]</div>
+      </div>
+      <paper-star-rating disabled value="[[housing.rate]]"></paper-star-rating>
+      <div id="price">[[housing.price]] €<div id="surface"> 55 m²</div></div>
+
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-housing-preview',
+
+      properties: {
+        housing: Object
+      },
+
+      _computeIcon: function(favorite) {
+        this.toggleClass('favorite', favorite, this.$.favorite);
+        return favorite ? 'favorite': 'favorite-border';
+      },
+
+      _getMinNights: function(minNights) {
+        return minNights ? minNights+' nuits min': '';
+      },
+
+      _favoriteTapped: function() {
+        var favorite = !this.housing.favorite;
+        this.set('housing.favorite', favorite);
+        this.fire('favorited', {reference: this.housing.reference, boolean: favorite});
+      }
+      
+    });
+  </script>
+</dom-module>
