@@ -45,7 +45,8 @@
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
     "paper-slider": "PolymerElements/paper-slider#^1.0.10",
     "paper-radio-button": "PolymerElements/paper-radio-button#^1.1.2",
-    "paper-star-rating": "^1.0.0"
+    "paper-star-rating": "^1.0.0",
+    "paper-tabs": "PolymerElements/paper-tabs#^1.5.0"
   },
   "devDependencies": {
     "paper-styles": "PolymerElements/paper-styles#^1.1.2",
