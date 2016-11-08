@@ -1,0 +1,92 @@
+[
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-04-09T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis."
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-04-09T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-04-010T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-04-10T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-04-11T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-04-11T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-04-11T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-05-09T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-05-09T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-05-09T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-05-09T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-05-10T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-05-10T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	},
+	{
+		"sender_ref": "R7UHS9JJS0",
+		"recipient_ref": "LJD087DJD8", 
+		"date": "2016-05-10T11:40:04Z",
+		"text": "Répète ?"
+	},
+	{
+		"sender_ref": "LJD087DJD8",
+		"recipient_ref": "R7UHS9JJS0", 
+		"date": "2016-05-10T11:40:04Z",
+		"text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, blanditiis, officiis. ?"
+	}
+]

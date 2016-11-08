@@ -1,0 +1,31 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-meta/iron-meta.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+
+<script>
+
+  Polymer({
+    
+    is: 'iron-meta-token',
+
+    hostAttributes: {
+      'hidden': true
+    },
+
+    behaviors: [
+      Polymer.IronFormElementBehavior
+    ],
+
+    ready: function() {
+      var ironMetaQuery = new Polymer.IronMetaQuery({key: 'csrf_token'});
+      if (ironMetaQuery.value 
+        && (value = ironMetaQuery.value.token) 
+        && (name = ironMetaQuery.value.name)) {
+        this.value = value;
+        this.name = name;
+      } else {
+        console.warn('You must provide a token value and name using <iron-meta-set-token> for your forms to contain a token.');
+      }
+    }
+  });
+</script>

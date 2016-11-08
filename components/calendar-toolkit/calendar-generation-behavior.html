@@ -1,0 +1,214 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="moment-import.html">
+
+<script>
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.CalendarGenerationBehavior
+   */
+  Polymer.CalendarGenerationBehavior = {
+  	
+  	properties: {
+        locale:{
+          type: String,
+          value: 'en',
+          observer: '_localeChange'
+        },
+        lowerThreshold: {
+          type: Number,
+          value: 600
+        },
+        maxMonth: {
+          type: Object,
+          observer: '_checkMaxMonthValidity'
+        },
+        minMonth: {
+          type: Object,
+          observer: '_checkMinMonthValidity'
+        },
+        loadMonthsIncrement: {
+          type: Number,
+          value: 4
+        },
+        startMonth: {
+          type: Object,
+          value: function() {
+            return moment();
+          }
+        },
+        _firstLoadedMonthDate: {
+          type: Date,
+          readOnly: true
+        },
+        _lastLoadedMonthDate: {
+          type: Date,
+          readOnly: true
+        },
+        _unloadedLowerMonths: {
+          type: Number,
+          readOnly: true
+        },
+        _unloadedUpperMonths: {
+          type: Number,
+          readOnly: true
+        },
+        _weekdays: {
+          type: Array,
+          readOnly: true
+        }
+      },
+
+      observers: [
+        '_checkBoundsValidity(minMonth, maxMonth)',
+        // jump when startMonth change and once min/maxMonth are defined
+        'jumpToMonth(startMonth, minMonth, maxMonth)'
+      ],
+
+      ready: function() {
+        // if minMonth or maxMonth is undefined, the observer jumpToMonth will not be called, then it is called
+        if (!this.minMonth || !this.maxMonth) {
+          this.jumpToMonth(this.startMonth);
+        }
+        this.setScrollDirection('y', this.$.scrollThreshold);
+      },
+
+      generateMonthsUntil: function(month) {
+        this.generateLowerMonths(moment(month).diff(this._lastLoadedMonthDate, 'month'));
+        this.generateUpperMonths(moment(this._firstLoadedMonthDate).diff(month, 'month'));
+      },
+
+      generateLowerMonths: function(nb) {
+        if (!this._lastLoadedMonthDate || !this._unloadedLowerMonths || nb <= 0) {
+          return;
+        }
+        var month = moment(this._lastLoadedMonthDate);
+        if (this._unloadedLowerMonths > -1) {
+          nb = Math.min(nb, this._unloadedLowerMonths);
+          this._set_unloadedLowerMonths(this._unloadedLowerMonths - nb);
+        }
+        for (let i=0; i<nb; i++) {
+          month.add(1, 'month');
+          this.push('_months', this._getMonth(month));
+        }
+        this._set_lastLoadedMonthDate(month.toDate());
+        this.$.scrollThreshold.clearTriggers();
+      },
+
+      generateUpperMonths: function(nb) {
+        if (!this._firstLoadedMonthDate || !this._unloadedUpperMonths || nb <= 0) {
+          return;
+        }
+        var month = moment(this._firstLoadedMonthDate);
+        if (this._unloadedUpperMonths > -1) {
+          nb = Math.min(nb, this._unloadedUpperMonths);
+          this._set_unloadedUpperMonths(this._unloadedUpperMonths - nb)
+        }
+        for (let i=0; i<nb; i++) {
+          month.subtract(1, 'month');
+          this.unshift('_months', this._getMonth(month));
+        }
+        var savedScrollTop = this.$.scrollThreshold.scrollTop;
+        this.$.ironList.scrollToIndex(nb);
+        this.$.scrollThreshold.scroll(0, this.$.scrollThreshold.scrollTop + savedScrollTop);
+        this._set_firstLoadedMonthDate(month.toDate());
+        this.$.scrollThreshold.clearTriggers();
+      },
+
+      getMonthIndexForDate: function(date) {
+        return moment(date).diff(this._firstLoadedMonthDate, 'month');
+      },
+
+      jumpToMonth: function(month) {
+        // TODO: for performance, if month is already generated, use this.$.ironList.scrollToIndex()
+        var month = moment(month);
+        if (this.minMonth != undefined) {
+          month = moment.max(month, moment(this.minMonth));
+        }
+        if (this.maxMonth != undefined) {
+          month = moment.min(month, moment(this.maxMonth));
+        }
+        this.set('_months', [ this._getMonth(month) ] );
+        this._set_firstLoadedMonthDate(month.startOf('month').toDate());
+        this._set_lastLoadedMonthDate(month.startOf('month').toDate());
+        this._set_unloadedLowerMonths(this.maxMonth ? moment(this.maxMonth).diff(month, 'month') : -1);
+        this._set_unloadedUpperMonths(this.minMonth ? month.diff(this.minMonth, 'month') : -1);
+        this._loadLowerMonth();
+      },
+
+      _checkBoundsValidity: function(minMonth, maxMonth) {
+        if ( moment(minMonth).isAfter(maxMonth) ) {
+          this.minMonth = this.maxMonth = undefined;
+        }
+      },
+
+      _checkMaxMonthValidity: function(maxMonth) {
+        if ( maxMonth != undefined && !moment(maxMonth).isValid() ) {
+          this.maxMonth = undefined;
+        }
+      },
+
+      _checkMinMonthValidity: function(minMonth) {
+        if ( minMonth != undefined && !moment(minMonth).isValid() ) {
+          this.minMonth = undefined;
+        }
+      },
+
+      _getStartWeekday: function(month) {
+        var startWeekday = month.startOf('month').format('d') - this._firstDayOfWeek;
+        if (startWeekday < 0) {
+          startWeekday += 7;
+        }
+        return startWeekday;
+      },
+
+      _getMonth: function(date) {
+        return {
+          year: date.format('YYYY'),
+          month: date.format('M') - 1,
+          days : this._getMonthDays(date),
+          startWeekday: this._getStartWeekday(date)
+        }
+      },
+
+      _loadLowerMonth: function() {
+        this.generateLowerMonths(this.loadMonthsIncrement);
+      },
+
+      _loadUpperMonth: function() {
+        this.generateUpperMonths(this.loadMonthsIncrement);
+      },
+
+      _localeChange: function() {
+        // set moment locale globally
+        moment.locale(this.locale);
+        // set first day of week and weekdays according to locale
+        this._firstDayOfWeek = moment().weekday(0).format('d');
+        // get weekdays in the right order according to locale
+        var weekdays = [];
+        for (var i=0; i<7; i++) {
+          weekdays.push(moment().weekday(i).format('dd'));
+        }
+        this._set_weekdays(weekdays)
+      },
+
+      _getMonthName: function(monthIndex) {
+        return moment().month(monthIndex).format('MMMM');
+      },
+
+      _getMonthDays: function(month) {
+        var days = [];
+        for(let i=0; i<month.daysInMonth(); i++) {
+          days[i] = {
+            timestamp: month.date(i+1).valueOf()
+          };
+        }
+        return days;
+      },
+
+      _increment: function(n) {
+        return n + 1;
+      }
+
+  }
+
+</script>

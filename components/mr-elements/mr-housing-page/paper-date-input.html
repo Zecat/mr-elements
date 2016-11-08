@@ -1,0 +1,294 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../moment-element/moment-import.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
+<!-- <link rel="import" href="ssn-validator.html"> -->
+
+<!--
+`paper-date-input`
+A single-line text field for entering a date.
+
+@demo demo/index.html 
+-->
+
+
+<dom-module id="paper-date-input">
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+      :host([hidden]) {
+        display: none !important;
+      }
+      input[is="iron-input"] {
+        font: inherit;
+        outline: none;
+        box-shadow: none;
+        border: none;
+        width: auto;
+      }
+      .container {
+        @apply(--layout-horizontal);
+      }
+      .delimeter {
+        @apply(--paper-date-input-delimeter);
+      }
+    </style>
+
+    <paper-input-container always-float-label attr-for-value="value">
+      <label>[[label]]</label>
+      <div class="container">
+
+        <input
+          id="day"
+          is="iron-input" 
+          maxlength="2"
+          size="2"
+          value="{{inputDay::change}}"
+          bind-value="{{day}}"
+          aria-label="Date"
+          on-focus="_focusHandler"
+          on-focusout="_autocompleteDay">
+        <span class="delimeter">[[delimeter]]</span>
+        <input
+          id="month"
+          is="iron-input"
+          maxlength="2"
+          size="2"
+          bind-value="{{month}}"
+          aria-label="Month"
+          on-focus="_focusHandler"
+          on-focusout="_autocompleteMonth">
+        <span class="delimeter">[[delimeter]]</span>
+        <input
+          id="year"
+          is="iron-input"
+          on-focus="_focusHandler"
+          maxlength="4"
+          bind-value="{{year}}"
+          size="4"
+          aria-label="Year">
+
+    </div>
+      <!-- <paper-input-error>SSN invalid!</paper-input-error> -->
+    </paper-input-container>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'paper-date-input',
+    behaviors: [
+      // Polymer.IronValidatableBehavior
+    ],
+    properties: {
+      //behavior
+      value: {
+        notify: true,
+        type: String,
+        notify: true
+      },
+      // date: {
+      //   type: Date
+      // },
+      day: {
+        type: String,
+        notify: true
+      },
+      inputDay: {
+        type: String,
+        notify: true
+      },
+      month: {
+        type: String,
+        notify: true
+      },
+      year: {
+        type: String,
+        notify: true
+      },
+      validator: {
+        type: String,
+        value: 'ssn-validator'
+      },
+      delimeter: {
+        type: String,
+        value: '/'
+      },
+      /**
+       * TODO: vérifier format
+       * @type {Object}
+       */
+      format: {
+        type: String,
+        value: 'L'
+      }
+      
+    },
+
+    behaviors: [
+      Polymer.IronA11yKeysBehavior
+    ],
+
+    observers: [
+      // compute ?
+      '_dateFieldChanged(day, month, year)',
+      '_valueChanged(value)',
+      '_dayChanged(day)',
+      '_monthChanged(month)',
+      '_formatChanged(format)',
+    ],
+
+    keyBindings: {
+      'down': '_downPressed',
+      'up': '_upPressed',
+      '1 2 3 4 5 6 7 8 9': '_resetPreventSkipInput'
+    },
+
+    _resetPreventSkipInput: function() {
+      this.preventSkipInput = false;
+    },
+
+    _focusHandler: function(e) {
+      this.focusedInput = Polymer.dom(e).rootTarget;
+      this.focusedInput.select();
+    },
+
+    _downPressed: function(e) {
+      e.preventDefault();
+      this.preventSkipInput = true;
+      //check if focused exist ?
+      switch (this.focusedInput.id) {
+        case 'day':
+          var day = parseInt(this.day, 10) - 1 || this.endOfMonthDate;
+          if (day < 1) {
+            day += this.endOfMonthDate;
+          }
+          this.day = day;
+          this._autocompleteDay();
+          break;
+        case 'month':
+          var month = parseInt(this.month, 10) - 1 || 12;
+          if (month < 1) {
+            month += 12;
+          }
+          this.month = month;
+          this._autocompleteMonth();
+          break;
+        case 'year':
+          this.year--;
+          break;
+      }
+      this.focusedInput.select();
+    },
+
+    _upPressed: function(e) {
+      e.preventDefault();
+      this.preventSkipInput = true;
+      //check if focused exist ?
+      switch (this.focusedInput.id) {
+        case 'day':
+          var day = parseInt(this.day, 10) + 1 || 1;
+          var endOfMonthDate = this.endOfMonthDate;
+          if (day > endOfMonthDate) {
+            day -= endOfMonthDate;
+          }
+          this.day = day;
+          this._autocompleteDay();
+          break;
+        case 'month':
+          var month = parseInt(this.month, 10) + 1 || 1;
+          if (month > 12) {
+            month -= 12;
+          }
+          this.month = month;
+          this._autocompleteMonth();
+          break;
+        case 'year':
+          this.year++;
+          break;
+      }
+      this.focusedInput.select();
+    },
+
+    _dateFieldChanged: function(day, month, year) {
+      if (day && month && year) {
+        var date = moment({ year: year, month: parseInt(month, 10)-1, day: day});
+        if (date.isValid()) {
+          this.value = date.format(this.format);
+        }
+      }
+    },
+
+    _autocompleteDay: function() {
+      if (this.day && this.day[0] !== '0' && this.day < 10) {
+        this.day = '0' + this.day;
+      }
+    },
+
+    _autocompleteMonth: function() {
+      if (this.month && this.month[0] !== '0' && this.month < 10) {
+        this.month = '0' + this.month;
+      }
+    },
+
+    _dayChanged: function(day) {
+      if (day) {
+        if (day[0] !== '0' && 3 < day && day < 10 && this.$.day.selectionStart != 0) {
+          this.day = '0' + day;
+          // SI SELECTIONNE (et month non défini?)
+          if (!this.preventSkipInput) {
+            this.$.month.select();
+          }
+        } 
+        if (day > 9) {
+          this.day = Math.min(this.day, this.endOfMonthDate);
+          // SI SELECTIONNE (et month non défini?)
+          if (!this.preventSkipInput) {
+            this.$.month.select();
+          }
+        }
+      }
+    },
+
+    get endOfMonthDate() {
+      return this.month ? moment({year: 2016, month: parseInt(this.month, 10)+1}).endOf('month').date() : 31;
+    },
+
+    _monthChanged: function(month) {
+      if (month) {
+        if (month[0] !== '0' && month != 1 && month < 10 && this.$.month.selectionStart != 0) {
+          this.month = '0' + month;
+          if (!this.preventSkipInput) {
+            this.$.year.select();
+          }
+        } 
+        if (month > 9) {
+          this.month = Math.min(this.month, 12);
+          if (!this.preventSkipInput) {
+            this.$.year.select();
+          }
+        }
+      }
+    },
+
+    _valueChanged: function(value) {
+      if (moment(value, this.format, true).isValid()) {
+        var date = moment(value, this.format);
+        this.day = date.format('DD');
+        this.month = date.format('MM');
+        this.year = date.year();
+      }
+    },
+
+    _formatChanged: function(format) {
+      // update value
+      // update fields
+    }
+    
+  });
+</script>

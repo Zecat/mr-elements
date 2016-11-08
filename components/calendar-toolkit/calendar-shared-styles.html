@@ -1,0 +1,63 @@
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../paper-styles/shadow.html">
+
+<dom-module id="calendar-shared-styles">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        @apply(--paper-font-common-base);
+        @apply(--layout-vertical);
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: default;
+      }
+      .week {
+        @apply(--layout-horizontal);
+        @apply(--shadow-elevation-4dp);
+        z-index: 1;
+      }
+      .monthDays {
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+        @apply(--layout-flex-none);
+      }
+      .dayWrapper{
+        width: 14.285%;
+        padding-top: 14.285%;
+        position: relative;
+      }
+      .month{
+        @apply(--layout-vertical);
+        background: white;
+      }
+      .month-name {
+        height: 50px;
+        background: var(--paper-grey-50);
+        color: var(--paper-blue-700);
+        @apply(--layout);
+        @apply(--layout-center-center);
+        font-weight: bold;
+      }
+      #scrollThreshold {
+        @apply(--layout-flex);
+        position: relative;
+      }
+      .day, .weekday {
+        @apply(--layout);
+        @apply(--layout-fit);
+        @apply(--layout-center-center);
+      }
+      .weekday {
+        background: var(--paper-blue-700);
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </template>
+</dom-module>

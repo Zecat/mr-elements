@@ -1,0 +1,244 @@
+  <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../../paper-styles/typography.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
+  <link rel="import" href="../../paper-input/paper-input.html">
+  <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+  <link rel="import" href="../../paper-listbox/paper-listbox.html">
+  <link rel="import" href="../../paper-item/paper-item.html">
+  <link rel="import" href="../../paper-input/paper-input.html">
+  <link rel="import" href="paper-date-input.html">
+  <link rel="import" href="../../paper-fab/paper-fab.html">
+  <link rel="import" href="../../paper-tabs/paper-tabs.html">
+  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../paper-menu-button/paper-menu-button.html">
+  <link rel="import" href="../../paper-menu/paper-menu.html">
+  <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../app-layout/app-header/app-header.html">
+  <link rel="import" href="../../app-layout/app-header-layout/app-header-layout.html">
+  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../iron-icons/iron-icons.html">
+  <link rel="import" href="mr-calendar.html">
+
+
+<dom-module id="mr-reservation">
+  <template>
+    <style>
+    :host {
+      display: block;
+      position: relative;
+      @apply(--paper-font-common-base);
+      box-shadow: -3px 0 10px rgba(0, 0, 0, 0.14);
+    }
+
+.white-input {
+  --paper-input-container-input-color: var(--paper-blue-50);
+  --paper-input-container-focus-color: var(--accent-color);
+  --paper-input-container-input-color: white;
+  --paper-input-container-underline: {
+    background: var(--paper-blue-50);
+  };
+  --paper-input-container-label: {
+    color: white;
+  };
+}
+
+#secondary-toolbar {
+  /*padding: 0 24px 12px 24px;*/
+  padding: 0 24px;
+  color: white;
+  font-family: 'roboto';
+  font-size: 16px;
+  /*padding-left: 24px;*/
+  box-sizing: border-box;
+  @apply(--layout-horizontal);
+  @apply(--layout-center-justified);
+  @apply(--layout-center);
+}
+#secondary-toolbar paper-date-input {
+  width: 110px;
+  text-align: left;
+  --paper-date-input-delimeter: {
+    opacity: 0.5;
+  };
+}
+#voyageurs {
+  width: 57px;
+  text-align: center;
+  --paper-input-container-underline: {
+    display: none;
+  };
+}
+
+mr-calendar {
+  width: 300px;
+  @apply(--layout-flex);
+}
+#calendar-reservation {
+  width: 100%;
+  background: var(--paper-blue-700);
+  @apply(--layout-horizontal);
+  @apply(--layout-justified);
+  /*z-index: 100;*/
+  box-shadow: 0 -2px 10px rgba(51, 51, 51, 0.3);
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+#reserver {
+  color: white;
+  top: 170px;
+  position: absolute;
+  left:0;
+  right: 0;
+  margin: 0;
+  height: 64px
+}
+
+#date-chevron {
+  padding: 12px;
+  position: relative;
+  top: 10px;
+  color: var(--paper-blue-50);
+}
+#voyageursTabs {
+        --paper-tabs-selection-bar-color: var(--primary-color);
+      }
+      #voyageursTabs paper-tab {
+        --paper-tab-ink: var(--primary-color);
+
+      }
+      paper-dropdown-menu {
+        margin-left: 8px;
+        --paper-dropdown-menu-icon: {
+          color: white;
+        };
+      }
+      paper-listbox {
+        width: 166px;
+      }
+      #title {
+        @apply(--paper-font-subhead);
+        font-size: 20px;
+        padding: 8px;
+        font-weight: 600;
+      }
+      app-header {
+        background: var(--paper-blue-500);
+        color: white;
+      }
+      #fab {
+        background: var(--paper-blue-50);
+        color: var(--paper-blue-700);
+        position: absolute;
+        top: -28px;
+        right: 118px;
+      }
+      #flex {
+        @apply(--layout-flex);
+      }
+      #header-content {
+        @apply(--layout-vertical);
+        height: 100%;
+      }
+      #prix {
+        color: white;
+        font-size: 24px;
+        width: 100%;
+      }
+      #c {
+        opacity: 0.9;
+        color: white;
+        font-size: 14px;
+        width: 100%;
+      }
+      #vertical {
+        @apply(--layout-vertical);
+        @apply(--layout-center-justified);
+      }
+      #facture {
+        background: var(--paper-blue-500);
+        color: white;
+        height: auto;
+        @apply(--layout-vertical);
+        font-size: 16px;
+        padding: 24px;
+        padding-top: 24px;
+        padding-bottom: 12px;
+        box-sizing: border-box;
+      }
+      .divider {
+        width: 100%;
+        height: 1px;
+        background: white;
+        opacity: 0.4;
+        @apply(--layout-flex-none);
+      }
+      .facture-row {
+        width: 100%;
+        padding: 8px 4px;
+        box-sizing: border-box;
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+        @apply(--layout-flex-none);
+      }
+      #nuit {
+        font-size: 12px;
+      }
+    </style>
+  
+        <app-header-layout has-scrolling-region fullbleed>
+
+          <app-header fixed shadow>
+
+            <!-- <app-toolbar id="primary-toolbar">
+              <paper-icon-button icon="arrow-back" raised></paper-icon-button>
+              <div id="title">Réservation</div>
+            </app-toolbar> -->
+
+            <app-toolbar id="secondary-toolbar">
+              <paper-date-input class="white-input" label="Arrivé" auto-validate pattern="[a-zA-Z]*" error-message="Date indisponible" value="10-12-2016"></paper-date-input>
+              <iron-icon id="date-chevron" icon="chevron-right"></iron-icon>
+              <paper-date-input class="white-input" label="Départ"></paper-date-input>
+            </app-toolbar>
+
+          </app-header>
+
+          <div id="header-content">
+
+            <mr-calendar locale="fr"></mr-calendar>
+
+            <app-toolbar id="calendar-reservation">
+              <div id="vertical">
+                <div id="prix">34 € <span id="nuit">/ nuit</span></div>
+              </div>
+              <paper-dropdown-menu id="voyageurs" horizontal-align="right" label="Voyageurs" class="white-input">
+                <iron-icon drawer-toggle icon="arrow-back" prefix></iron-icon>
+                <paper-tabs no-bar id="voyageursTabs" class="dropdown-content" selected="1">
+                  <paper-tab>1</paper-tab>
+                  <paper-tab>2</paper-tab>
+                  <paper-tab>3</paper-tab>
+                  <paper-tab>4</paper-tab>
+                  <paper-tab>5</paper-tab>
+                  <paper-tab>6</paper-tab>
+                </paper-tabs>
+              </paper-dropdown-menu>
+          </app-toolbar>
+          
+          <app-toolbar id="facture">
+            <paper-fab id="fab" icon="check"></paper-fab>
+            <div class="facture-row"><span>34 € x 3 nuits</span><span>130 €</span></div>
+            <div class="divider"></div>
+            <div class="facture-row"><span>Frais de service</span><span>22 €</span></div>
+            <div class="divider"></div>
+            <div class="facture-row"><span>Total</span><span>152 €</span></div>
+          </app-toolbar>
+
+        </div>
+      </app-header-layout>
+            
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-reservation'
+    });
+  </script>
+</dom-module>

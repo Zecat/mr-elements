@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>iron-form-csrf Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="../../paper-styles/demo-pages.html">
+    <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../iron-form-csrf.html">
+    <link rel="import" href="../iron-meta-set-token.html">
+    <link rel="import" href="../iron-meta-token.html">
+  </head>
+  <body unresolved>
+
+    <style>
+      .vertical-section-container {
+        max-width: 500px;
+        margin: auto;
+      }
+    </style>
+    
+    <div class="vertical-section-container">
+      <h2>A set of elements to add CSRF token to your forms :</h2>
+      <h4>First, use &lt;iron-meta-set-token&gt; to set the token's value and name, once, anywhere in your code.</h4>
+      <demo-snippet class="centered-demo">
+        <template>
+          <iron-meta-set-token value="kljo8YKopd" name="_token">
+          </iron-meta-set-token>
+        </template>
+      </demo-snippet>
+      <h4>&lt;iron-form-csrf&gt; is a wrapper around &lt;form is="iron-form"&gt; including the hidden input token.</h4>
+      <demo-snippet class="centered-demo">
+        <template>
+          <iron-form-csrf method="post" action="/">
+            <paper-checkbox>checkbox</paper-checkbox>
+            <button type="submit">submit</button>
+          </iron-form-csrf>
+        </template>
+      </demo-snippet>
+      <h4>Or use &lt;iron-meta-token&gt; in a &lt;form is="iron-form"&gt;</h4>
+      <demo-snippet class="centered-demo">
+        <template>
+          <form is="iron-form" method="post" action="/">
+            <iron-meta-token></iron-meta-token>
+            <paper-checkbox>checkbox</paper-checkbox>
+            <button type="submit">submit</button>
+          </form>
+        </template>
+      </demo-snippet>      
+    </div>
+  </body>
+</html>

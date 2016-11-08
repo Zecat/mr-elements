@@ -1,0 +1,42 @@
+{
+  "name": "iron-form-csrf",
+  "version": "1.0.1",
+  "authors": [
+    "Zecat <jullienfelix@gmail.com>"
+  ],
+  "description": "Convenients elements to add CSRF token to your forms.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed"
+  ],
+  "main": "iron-form-csrf.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/zecat/iron-form-csrf/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#~1.0.6",
+    "iron-form": "PolymerElements/iron-form#~1.0.13",
+    "iron-meta": "PolymerElements/iron-meta#~1.1.1"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^3.4.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#~1.0.3",
+    "paper-styles": "PolymerElements/paper-styles#~1.1.2",
+    "paper-checkbox": "PolymerElements/paper-checkbox#~1.1.0"
+  },
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.1",
+    "commit": "e82f6631c34155e5d1f195ca8f20534dfcc60966"
+  },
+  "_source": "https://github.com/Zecat/iron-form-csrf.git",
+  "_target": "^1.0.0",
+  "_originalSource": "Zecat/iron-form-csrf"
+}

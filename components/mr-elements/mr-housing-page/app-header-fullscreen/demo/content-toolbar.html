@@ -1,0 +1,137 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>content-toolbar Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../../paper-styles/typography.html">
+    <link rel="import" href="../../paper-styles/color.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../app-header/app-toolbar/app-toolbar.html">
+    <link rel="import" href="../app-header-fullscreen.html">
+    <link rel="import" href="demo-helpers/sample-content.html">
+    <link rel="import" href="demo-helpers/cat-grid-list.html">
+    <link rel="import" href="demo-helpers/demo-icons.html">
+  </head>
+  <body unresolved>
+
+  <template is="dom-bind" id="app">
+
+    <style is="custom-style" include="app-grid-style">
+
+      body {
+        margin: 0;
+        background: #FAFAFA;
+        @apply(--paper-font-common-base);
+      }
+      #header {
+        color: white;
+        position: relative;
+      }
+      #sticky {
+        height: 100vh;
+      }
+      #background {
+        @apply(--layout-fit);
+        background: black;
+        transition: opacity 0.4s;
+        opacity: 0.4;
+      }
+      #header[fullscreen] #background{
+        opacity: 0;
+      }
+      #frontContent {
+        z-index: 1;
+        position: relative;
+        transform: translate3d(0,-202px, 0);
+        padding:24px;
+        margin: 24px 100px;
+        cursor: pointer;
+      }
+      #frontContent.fixed {
+        position: fixed;
+        top: 100vh;
+      }
+      #frontContentWrapper {
+        height: 1300px;
+      }
+      paper-icon-button {
+        height: 48px;
+        width: 48px;
+        color: white;
+        margin: 12px;
+      }
+      @media(max-width: 799px) {
+        #frontContent {
+          margin: 24px 0;
+        }
+        paper-icon-button {
+          margin: 0;
+        }
+      }
+        
+    </style>
+
+    {{_fullscreenChanged(fullscreen)}}
+
+    <app-header-fullscreen
+      id="header"
+      condenses
+      fullscreen="{{fullscreen}}"
+      effects="parallax-back"
+      effects-config='{"parallax-back": {"scalar": 0.7}}'
+      initial-content-scroll="200">
+
+      <div id="sticky">
+        <div id="background"></div>
+        <a href="index.html" tabindex="-1">
+          <paper-icon-button icon="demo:arrow-back"></paper-icon-button>
+        </a>
+      </div>
+
+      <cat-grid-list id="backLayer" slot="back-layer"></cat-grid-list>
+
+    </app-header-fullscreen>
+
+    <div id="frontContentWrapper">
+      <sample-content
+        id="frontContent"
+        on-mouseenter="_exitFullscreen"
+        on-mouseleave="_tryEnterFullscreen"
+        on-down="_exitFullscreen"
+        on-tap="_scrollExitFullscreen"
+        size="5">
+      </sample-content>
+    </div>
+
+  </template>
+  
+  <script>
+    var app = document.getElementById('app');
+
+    app._fullscreenChanged = function(fullscreen) {
+      app.toggleClass('fixed', fullscreen, app.$.frontContent);
+    }
+    app._exitFullscreen = function() {
+      app.$.header.exitFullscreen();
+    }
+    app._tryEnterFullscreen = function() {
+      app.$.header.tryEnterFullscreen();
+    }
+    app._scrollExitFullscreen = function() {
+      app.$.header.scrollExitFullscreen();
+    }
+  </script>
+
+  </body>
+</html>

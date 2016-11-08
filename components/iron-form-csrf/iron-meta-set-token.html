@@ -1,0 +1,40 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-meta/iron-meta.html">
+
+<dom-module id="iron-meta-set-token">
+
+  <template>
+    <iron-meta id="ironMeta" key="csrf_token" value="[[_data]]"></iron-meta>
+  </template>
+
+  <script>
+
+    Polymer({
+      
+      is: 'iron-meta-set-token',
+
+      hostAttributes: {
+        'hidden': true
+      },
+
+      properties: {
+        value: String,
+        name: String,
+        _data: {
+          type: Object,
+          computed: '_computeData(value, name)',
+          readOnly: true
+        }
+      },
+
+      _computeData: function(value, name) {
+        return {
+          'token': value,
+          'name': name
+        };
+      }
+
+    });
+
+  </script>
+</dom-module>

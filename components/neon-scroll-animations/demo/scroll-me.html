@@ -1,0 +1,135 @@
+<link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../neon-scroll-animations.html">
+
+<dom-module id="scroll-me">
+  <template>
+    <style>
+      :host {
+        display: block;
+        width: 400px;
+        height: 400px;
+        overflow: auto;
+      }
+      div {
+        width: 800px;
+        height: 800px;
+      }
+    </style>
+
+    <div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'scroll-me',
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              'x-shift': {
+                name: 'neon-scroll-animations',
+                node: this,
+                xShift: 200
+              },
+              'left-shift': {
+                name: 'neon-scroll-animations',
+                node: this,
+                xShift: 'left'
+              },
+              'right-shift': {
+                name: 'neon-scroll-animations',
+                node: this,
+                xShift: 'right'
+              },
+              'y-shift': {
+                name: 'neon-scroll-animations',
+                node: this,
+                yShift: 200
+              },
+              'top-shift': {
+                name: 'neon-scroll-animations',
+                node: this,
+                yShift: 'top'
+              },
+              'bottom-shift': {
+                name: 'neon-scroll-animations',
+                node: this,
+                yShift: 'bottom'
+              }
+            };
+          }
+        }
+      },
+      xShift: function() {
+        this.playAnimation('x-shift');
+      },
+      leftShift: function() {
+        this.playAnimation('left-shift');
+      },
+      rightShift: function() {
+        this.playAnimation('right-shift');
+      },
+      yShift: function() {
+        this.playAnimation('y-shift');
+      },
+      topShift: function() {
+        this.playAnimation('top-shift');
+      },
+      bottomShift: function() {
+        this.playAnimation('bottom-shift');
+      },
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ]
+    });
+  </script>
+</dom-module>

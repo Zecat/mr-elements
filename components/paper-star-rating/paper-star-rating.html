@@ -1,0 +1,228 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-styles/color.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <paper-star-rating></paper-star-rating>
+
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="paper-star-rating">
+    <template>
+        <style>
+            :host {
+                display: block;
+                box-sizing: border-box;
+                position: relative;
+                -moz-user-select: -moz-none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+            }
+
+            #block {
+                outline: none;
+                padding: 8px;
+
+            }
+
+            iron-icon {
+                --iron-icon-width: var(--paper-star-rating-icon-size, 35px);
+                --iron-icon-height: var(--paper-star-rating-icon-size, 35px);
+                color: var(--paper-star-color, --paper-grey-800);
+            }
+            .star-border{
+                color: var(--paper-empty-star-color, --paper-grey-300);
+            }
+        </style>
+
+        <div id="block" on-mouseout="_resetToInitValue" style$="width:[[sectionWidth]]" tabindex="0">
+            <template is="dom-repeat" items="[[starTab]]">
+                <iron-icon on-mousemove="_hoverStar" on-tap="_selectStar" on-track="_selectStar"
+                           icon="icons:[[item]]" class$="[[item]]"></iron-icon>
+            </template>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'paper-star-rating',
+
+            behaviors: [
+                Polymer.IronA11yKeysBehavior,
+                Polymer.IronControlState,
+                Polymer.IronFormElementBehavior
+
+            ],
+
+            keyBindings: {
+                'left down': 'decrementValue',
+                'right up': 'incrementValue'
+            },
+
+            properties: {
+                keyEventTarget: {
+                    type: Object,
+                    value: function () {
+                        return this.$.block;
+                    }
+                },
+                mouseX: {
+                    type: Object
+                },
+                blockWidth: {
+                    type: Object
+                },
+                value: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                },
+                initValue: {
+                    type: Number,
+                    value: 0
+                },
+                star: {
+                    type: Number,
+                    value: 5
+                },
+                starTab: {
+                    type: Array
+                },
+                sectionWidth: {
+                    type: String,
+                    value: 'auto',
+                    computed: '_computSectionWidth(star,blockWidth)'
+                }
+            },
+
+            observers: ['_refreshTab(star,value)'],
+
+            _selectStar: function (item) {
+                if (!this.disabled && item.detail.sourceEvent.srcElement._templateInstance) {
+                    this.mouseX = (item.detail.sourceEvent.layerX);
+                    this.blockWidth = (item.srcElement.offsetWidth);
+                    var tempRank = item.detail.sourceEvent.srcElement._templateInstance.index;
+                    if (this.mouseX < this.blockWidth / 3)
+                        this.mouseX = 0;
+                    else if (this.mouseX > this.blockWidth * 3 / 5) {
+                        this.mouseX = 0;
+                        tempRank++;
+                    } else
+                        this.mouseX = 0.5;
+
+                    this.value = tempRank + this.mouseX;
+                    this.initValue = this.value;
+                }
+            },
+
+            _refreshTab: function (star, value) {
+                this.value = Math.max(0, Math.min(value, star));
+                if (value != this.value) {
+                    return;
+                }
+                var int = Math.floor(value);
+                var float = value - int;
+                var tab = [];
+                for (i = 0; i < star; i++) {
+                    if (i < int) {
+                        tab[i] = 'star';
+                    } else if (i == int && float != 0) {
+                        tab[i] = 'star-half';
+                    } else if (i == int && float == 0) {
+                        tab[i] = 'star-border';
+                    } else {
+                        tab[i] = 'star-border';
+                    }
+                }
+                this.starTab = tab;
+            },
+
+            _hoverStar: function (e) {
+                if (!this.disabled) {
+                    this.mouseX = (e.layerX);
+                    this.blockWidth = (e.srcElement.offsetWidth);
+                    var tempRank = e.srcElement._templateInstance.index;
+                    if (this.mouseX < this.blockWidth / 3)
+                        this.mouseX = 0;
+                    else if (this.mouseX > this.blockWidth * 3 / 5) {
+                        this.mouseX = 0;
+                        tempRank++;
+                    } else
+                        this.mouseX = 0.5;
+
+                    this.value = tempRank + this.mouseX;
+                }
+            },
+
+            _resetToInitValue: function (e) {
+                e.preventDefault;
+                if (e.srcElement.className == "style-scope paper-star-rating") {
+                    this.value = this.initValue;
+                }
+            },
+
+            _computSectionWidth: function(star, blockWidth){
+              return (star*blockWidth)+(star*4)+'px';
+            },
+
+            handleKeys: function (event, detail, sender) {
+                if (!this.disabled) {
+                    var keyIdentifier = event.detail.key;
+                    switch (keyIdentifier) {
+                        case "right":
+                            this.incrementValue();
+                            return;
+                        case "up":
+                            this.incrementValue();
+                            return;
+                        case "left":
+                            this.decrementValue();
+                            return;
+                        case "down":
+                            this.decrementValue();
+                            return;
+                    }
+                }
+            }
+            ,
+
+            incrementValue: function () {
+                if (this.value < this.star)
+                    this.value = this.value + 0.5;
+                    this.initValue = this.value;
+            }
+            ,
+            decrementValue: function () {
+                if (this.value > 0)
+                    this.value = this.value - 0.5;
+                    this.initValue = this.value;
+            }
+
+        });
+    </script>
+</dom-module>

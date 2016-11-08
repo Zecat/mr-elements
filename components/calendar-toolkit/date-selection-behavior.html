@@ -1,0 +1,195 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="moment-import.html">
+
+<script>
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.DateSelectionBehavior
+   */
+  Polymer.DateSelectionBehavior = {
+  	
+  	properties: {
+      selecting: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        readOnly: true,
+        observer: '_shouldReset_activeTarget'
+      },
+      selectionDisabled: {
+        type: Boolean,
+        value: false,
+        observer: '_selectionDisabledChange'
+      },
+      hoverDisabled: {
+        type: Boolean,
+        value: false,
+        observer: '_hoverDisabledChange'
+      },
+      touchSelectionDelay: {
+        type: Number,
+        value: 500
+      },
+      touchSelectionMaxYTremor: {
+        type: Number,
+        value: 10
+      },
+      _dayClass: {
+        type: String,
+        value: 'dayWrapper'
+      },
+      activeFromDate: {
+        type: Date,
+        readOnly: true
+      },
+      activeDate: {
+        type: Date,
+        computed: '_computeDateFromTarget(_activeTarget)',
+        observer: '_shouldUpdateActiveFromDate'
+      },
+      hoveredDate: {
+        type: Date,
+        computed: '_computeDateFromTarget(_hoveredTarget)'
+      },
+      _activeTarget: {
+        type: Object,
+        readOnly: true
+      },
+      touching: {
+        type: Boolean,
+        value: false,
+        readOnly: true
+      },
+      _hoveredTarget: {
+        type: Object,
+        readOnly: true
+      },
+      _touchStartY: {
+        type: Number,
+        readOnly: true
+      },
+      _waitForTouchSelection: {
+        type: Boolean,
+        vaue: false,
+        readOnly: true
+      }
+    },
+
+    _shouldReset_activeTarget: function(selecting) {
+      if (!selecting) {
+        this._set_activeTarget(null);
+      }
+    },
+
+    _hoverDisabledChange: function(hoverDisabled) {
+      if (!hoverDisabled) {
+        this.listen(this, 'mouseover', '_mouseoverHandler');
+      } else {
+        this.unlisten(this, 'mouseover', '_mouseoverHandler');
+      }
+    },
+
+    _selectionDisabledChange: function(selectionDisabled) {
+      if (!selectionDisabled) {
+        this.listen(this, 'touchstart', '_touchStartHandler');
+        this.listen(this, 'touchend', '_touchEndHandler');
+        this.listen(this, 'mouseup', '_mouseupHandler');
+        this.listen(this, 'down', '_downHandler');
+        this.listen(this, 'track', '_trackHandler');
+      }
+      else {
+        this.unlisten(this, 'touchstart', '_touchStartHandler');
+        this.unlisten(this, 'touchend', '_touchEndHandler');
+        this.unlisten(this, 'mouseup', '_mouseupHandler');
+        this.unlisten(this, 'down', '_downHandler');
+        this.unlisten(this, 'track', '_trackHandler');
+        this._setTouching(false);
+        this._setSelecting(false);
+      }
+    },
+
+    _downHandler: function(e) {
+      if (this.touching && this.touchSelectionDelay) {
+        this._set_touchStartY(e.detail.y);
+        this._set_waitForTouchSelection(true);
+        this.listen(this, 'touchmove', '_shouldCancelTouch');
+        this.async(function(){
+          this.unlisten(this, 'touchmove', '_shouldCancelTouch');
+          if (this._waitForTouchSelection) {
+            this._set_waitForTouchSelection(false);
+            this._startSelection(e);
+          }
+        }, this.touchSelectionDelay);
+      } else {
+        this._startSelection(e);
+      }
+    },
+
+    _mouseoverHandler: function(e) {
+      if (e.fromElement && e.fromElement.classList.contains(this._dayClass) && !this.selecting) {
+        this._set_hoveredTarget(e.fromElement);
+      }
+    },
+
+    _mouseupHandler: function() {
+      this._setSelecting(false);
+    },
+
+    _shouldCancelTouch: function(e) {
+      if (Math.abs(this._touchStartY - e.touches[0].clientY) > this.touchSelectionMaxYTremor) {
+        this._set_waitForTouchSelection(false);
+      }
+    },
+
+    _shouldUpdateActiveFromDate: function(newActiveDate, previousActiveDate) {
+      if (!previousActiveDate || !newActiveDate) {
+        this._setActiveFromDate(newActiveDate);
+      }
+    },
+
+    _startSelection: function(e) {
+      this._setSelecting(true);
+      if (e.target.classList.contains(this._dayClass)) {
+        this._set_activeTarget(e.target);
+      }
+    },
+
+    _touchStartHandler: function(e) {
+      this._setTouching(true);
+    },
+
+    _touchEndHandler: function(e) {
+      if (this._waitForTouchSelection) {
+        this._startSelection(e);
+        this._set_waitForTouchSelection(false);
+      }
+      this._setTouching(false);
+    },
+
+    _trackHandler: function(e) {
+      if (this.selecting) {
+        switch (e.detail.state) {
+          case 'track':
+            var hovered = e.detail.hover();
+            if (hovered && hovered.classList.contains(this._dayClass) && hovered != this._activeTarget) {
+              this._set_activeTarget(hovered);
+            }
+          break;
+          case 'end':
+            this._setSelecting(false);
+        }
+      }
+    },
+
+    /* Override this method with your own logic and return a Date object from the given target. We have already check that the target is defined and contains the class given by "dayClass" attribute. */
+    _getDateFromTarget: function(target) {
+      
+    },
+
+    _computeDateFromTarget: function(target) {
+      return target ? this._getDateFromTarget(target) : null;
+    }
+
+  }
+
+</script>

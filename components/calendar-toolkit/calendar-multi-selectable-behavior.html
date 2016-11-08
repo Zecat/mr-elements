@@ -1,0 +1,39 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="moment-import.html">
+<link rel="import" href="date-selection-behavior.html">
+<link rel="import" href="calendar-properties-toggling-behavior.html">
+
+<script>
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.CalendarMultiSelectableBehavior
+   */
+  Polymer.CalendarMultiSelectableBehaviorImpl = {
+
+    observers: [
+      '_hoveredIntervalChange(activeFromDate, activeDate)',
+    ],
+
+    ready: function() {
+      this._intervalToggledProperties = ['selected', 'selecting'];
+    },
+
+    _hoveredIntervalChange: function(activeFromDate, activeDate) {
+      if (!activeDate && this._toggledIntervalEndDate && this._toggledIntervalStartDate) {
+        this.togglePropertyForInterval(
+          this._toggledIntervalStartDate, this._toggledIntervalEndDate, 'selecting', false);
+      }
+      this._toggledIntervalStartDate = activeFromDate;
+      this._toggledIntervalEndDate = activeDate;
+    }
+
+  };
+
+  /** @polymerBehavior */  
+  Polymer.CalendarMultiSelectableBehavior = [
+    Polymer.CalendarPropertiesTogglingBehavior,
+    Polymer.DateSelectionBehavior,
+    Polymer.CalendarMultiSelectableBehaviorImpl
+  ];
+
+</script>

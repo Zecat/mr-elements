@@ -1,0 +1,342 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-selector/iron-selector.html">
+<link rel="import" href="../../paper-material/paper-material.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../google-map/google-map.html">
+<link rel="import" href="../../google-map/google-map-marker.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../iron-media-query/iron-media-query.html">
+<link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../paper-listbox/paper-listbox.html">
+<link rel="import" href="../../paper-item/paper-item.html">
+<link rel="import" href="../../paper-fab/paper-fab.html">
+<!-- <link rel="import" href="../../iron-overlay-slideshow/iron-overlay-slideshow.html"> -->
+
+    <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
+    <link rel="import" href="../../app-layout/app-drawer/app-drawer.html">
+    <link rel="import" href="../../app-layout/app-drawer-layout/app-drawer-layout.html">
+
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../paper-tabs/paper-tabs.html">
+    <link rel="import" href="../../iron-image/iron-image.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../paper-styles/typography.html">
+    <link rel="import" href="../../iron-scroll-spy/iron-auto-scroll-spy.html">
+    <link rel="import" href="app-header-fullscreen/app-header-fullscreen.html">
+    <link rel="import" href="app-header-fullscreen/effects/parallax-back.html">
+    <link rel="import" href="app-header-fullscreen/demo/demo-helpers/sample-content.html">
+    <link rel="import" href="mr-reservation.html">
+
+<link rel="import" href="mr-masonry-wall.html">
+
+<dom-module id="mr-housing-page">
+  <template>
+    <style>
+
+
+      :root {
+        --primary-color: var(--paper-blue-500);
+        --accent-color: var(--paper-lime-a200);
+        --secondary-color: white;
+      }
+
+      body {
+        margin: 0;
+        @apply(--paper-font-common-base);
+      }
+      .flex {
+        position: relative;
+        @apply(--layout-flex);
+      }
+      #header {
+        z-index: 11;
+        position: relative;
+        --app-header-fullscreen-front-layer: {
+          @apply(--layout-vertical);
+        };
+      }
+      paper-icon-button {
+        color: var(--secondary-color);
+      }
+      #stickyToolbar {
+        z-index: 1;
+      }
+      #backLayer {
+        margin-bottom: 64px;
+        min-height: 150vh;
+        background: white;
+      }
+      #fullscreenToolbar {
+        pointer-events: visible;
+        cursor: pointer;
+        background-color: var(--primary-color);
+        /*background-color: rgba(33, 150, 243, 0.98);*/
+        background-color: rgba(33, 150, 243, 1);
+      }
+      #nav {
+        height: 100%;
+        --paper-tabs-selection-bar-color: var(--accent-color);
+        --paper-tabs-selection-bar: {
+          height: 4px;
+        }
+      }
+      #nav paper-tab {
+        color: var(--secondary-color);
+        --paper-tab-ink: white;
+      }
+
+      #condensedShadow, #fullscreenShadow {
+        position: absolute;
+        right: 0px;
+        left: 0px;
+        bottom: 0;
+        width: 100%;
+        transition: opacity 0.4s;
+        pointer-events: none;
+        opacity: 0;
+        will-change: opacity;
+      }
+      #fullscreenShadow {
+        height: 50px;
+        box-shadow: inset 0px -25px 40px -20px rgba(0, 0, 0, 0.6);
+      }
+      #condensedShadow {
+        height: 300px;
+        box-shadow: inset 0px -200px 200px -100px rgba(0, 0, 0, 0.6);
+      }
+      #header[fullscreen] #fullscreenShadow,
+      #header:not([fullscreen]) #condensedShadow {
+        opacity: 1;
+      }
+      google-map {
+        width: 100%;
+        height: 400px;
+      }
+
+      app-drawer {
+        --app-drawer-width: 300px;
+        z-index: 12;
+      }
+      sample-content {
+        background: #FAFAFA;
+      }
+
+.white-input {
+  --paper-input-container-input-color: var(--paper-blue-50);
+  --paper-input-container-focus-color: var(--accent-color);
+  --paper-input-container-input-color: white;
+  --paper-input-container-underline: {
+    background: var(--paper-blue-50);
+  };
+  --paper-input-container-label: {
+    color: white;
+  };
+}
+#a paper-input {
+  width: 110px;
+}
+#voyageurs {
+  width: 57px;
+}
+app-drawer-layout {
+  background: #fafafa;
+}
+
+#nav-dropdown {
+  width: 150px;
+  @apply(--layout-center);
+  @apply(--layout);
+  height: 56px;
+  font-size: 14px;
+  --paper-dropdown-menu-ripple: {
+    top: -4px !important;
+    bottom: -4px;
+    left: -16px;
+    right: 0px;
+    color: white;
+  };
+  --paper-dropdown-menu-button: {
+    height: 100%;
+    @apply(--layout-center);
+    @apply(--layout);
+  };
+  --paper-input-container-underline-focus: {
+    display: none;
+  };
+  --paper-input-container-underline: {
+    display: none;
+  };
+}
+
+      paper-dropdown-menu {
+        --paper-dropdown-menu-icon: {        color: white;
+
+        };
+      }
+      paper-listbox {
+        width: 166px;
+      }
+      #fab {
+        position: fixed;
+        right: 36px;
+        bottom: 36px;
+        background: var(--paper-lime-700);
+        color: white;
+        z-index: 100;
+      }
+      mr-reservation {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+        <!-- <iron-auto-scroll-spy id="spy" scroll-target="document" spy-disabled auto-scroll-disabled> -->
+        <iron-media-query query="(max-width: 900px)" query-matches="{{narrow}}"></iron-media-query>
+
+      <app-header-fullscreen
+        id="header"
+        condenses
+        waterfall-shadow
+        fullscreen="{{fullscreen}}"
+        condensed="{{condensed}}"
+        initial-content-scroll="200"
+        effects="parallax-back">
+
+        <app-toolbar id="stickyToolbar">
+          <a href="#" tabindex="-1">
+            <paper-icon-button icon="menu"></paper-icon-button>
+          </a>
+        </app-toolbar>
+<!--         <app-drawer-layout>
+ --><!-- 
+        <app-drawer align="end" opened swipe-open persistent>
+          <div id="drawer-content">
+            <div id="a">
+            <paper-input class="white-input" label="Arrivé"></paper-input>
+            <iron-icon id="date-chevron" icon="chevron-right"></iron-icon>
+            <paper-input class="white-input" label="Départ"></paper-input>
+          </div>
+            <mr-calendar locale="fr"></mr-calendar>
+            <div id="calendar-reservation">
+              <paper-dropdown-menu id="voyageurs" label="Voyageurs" class="white-input">
+                <iron-icon icon="arrow-back" prefix></iron-icon>
+                <paper-tabs no-bar id="voyageursTabs" class="dropdown-content" selected="1">
+                  <paper-tab>1</paper-tab>
+                  <paper-tab>2</paper-tab>
+                  <paper-tab>3</paper-tab>
+                  <paper-tab>4</paper-tab>
+                  <paper-tab>5</paper-tab>
+                  <paper-tab>6</paper-tab>
+                </paper-tabs>
+              </paper-dropdown-menu>
+            <div> 
+            </div>
+            <paper-button>RESERVER</paper-button>
+          </div>
+          </div>
+        </app-drawer> -->
+        <!-- </app-drawer-layout> -->
+
+        <div class="flex">
+          <div id="condensedShadow"></div>
+          <div id="fullscreenShadow"></div>
+        </div>
+
+        <app-toolbar
+          id="fullscreenToolbar"
+          on-mouseenter="exitFullscreen"
+          on-mouseleave="tryEnterFullscreen"
+          on-down="exitFullscreen"
+          on-tap="scrollExitFullscreen">
+          <template is="dom-if" if="[[!narrow]]">
+            <paper-tabs id="nav" spacer selected="{{selected}}">
+              <paper-tab>GALLERY</paper-tab>
+              <paper-tab>DESCRIPTION</paper-tab>
+              <paper-tab>CARTE</paper-tab>
+              <paper-tab>HÔTE</paper-tab>
+              <paper-tab>COMMENTAIRES</paper-tab>
+            </paper-tabs>
+          </template>
+          <template is="dom-if" if="[[narrow]]">
+            <paper-dropdown-menu spacer no-label-float label="section" vertical-align="auto" class="white-input" id="nav-dropdown">
+            <iron-icon icon="arrow-back" prefix></iron-icon>
+            <paper-listbox class="dropdown-content" selected="1">
+              <paper-item>GALLERIE</paper-item>
+              <paper-item>DESCRIPTION</paper-item>
+              <paper-item>HÔTE</paper-item>
+              <paper-item>CARTE</paper-item>
+              <paper-item>COMMENTAIRES</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <!-- <paper-button id="reservation">Réservation</paper-button> -->
+          </template>
+          
+          
+          
+        </app-toolbar>
+          
+        <mr-masonry-wall id="backLayer" slot="back-layer" src-array="[[housing.src]]" on-header-image-loaded="_headerScroll"></mr-masonry-wall>
+
+      </app-header-fullscreen>
+  
+            <!-- a remplacer par app-drawer-layout -->
+
+      <app-drawer-layout>
+              <iron-media-query query="(max-width: 600px)" query-matches="{{narrow}}"></iron-media-query>
+
+      <app-drawer align="end" opened="[[!condensed]]" swipe-open persistent>
+
+        <mr-reservation></mr-reservation>
+                </app-drawer>
+
+             <!--  <app-drawer align="end" opened swipe-open persistent>
+                <div id="drawer-content">
+                  <mr-calendar locale="fr"></mr-calendar>
+                </div>
+              </app-drawer>  -->
+        <!-- <paper-fab id="fab" icon="today"></paper-fab> -->
+      <sample-content size="3"></sample-content>
+      <sample-content size="3"></sample-content>
+      <!-- <google-map latitude="37.77493" longitude="-122.41942" fit-to-markers>
+        <google-map-marker latitude="37.777" longitude="-122.38911"></google-map-marker>
+      </google-map> -->
+      </app-drawer-layout>
+      
+    <!-- </iron-auto-scroll-spy> -->
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-housing-page',
+
+      properties: {
+        housing: Object,
+        condensed: {
+          type: Boolean,
+          reflectToAttribute: true
+        }
+      },
+
+      exitFullscreen: function() {
+        this.$.header.exitFullscreen();
+        // this.$.spy.reset();
+      },
+      tryEnterFullscreen: function() {
+        this.$.header.tryEnterFullscreen();
+      },
+      scrollExitFullscreen: function() {
+        this.$.header.scrollExitFullscreen();
+      },
+      a: function(e, f) {
+        console.log(e, f);
+      },
+      _headerScroll: function(e) {
+        var headerScrollTop = e.detail.headerHeight - window.innerHeight + 64;
+        this.$.header.fire('iron-resize');
+        this.$.header.headerScrollTop = headerScrollTop +200*0.8;
+      }
+
+    });
+  </script>
+</dom-module>

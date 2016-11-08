@@ -1,0 +1,32 @@
+{
+  "name": "calendar-toolkit",
+  "version": "0.1",
+  "authors": [
+    "Zecat <jullienfelix@gmail.com>"
+  ],
+  "description": "An element providing a solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed"
+  ],
+  "main": "paper-calendar.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/Zecat/calendar-toolkit",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "moment": "^2.12.0",
+    "iron-scroll-threshold": "PolymerElements/iron-scroll-threshold#^1.0.1",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.7",
+    "iron-list": "PolymerElements/iron-list#^1.2.8",
+    "paper-date-input": "^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^4.0.0"
+  }
+}

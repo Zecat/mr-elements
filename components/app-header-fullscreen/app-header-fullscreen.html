@@ -1,0 +1,560 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../app-layout/app-scroll-effects/app-scroll-effects-behavior.html">
+<link rel="import" href="../app-layout/helpers/helpers.html">
+
+<!--
+
+`<app-header-fullscreen>` is composed of a front and a back layer. When the user scroll up and reach the fullscreen position, the front layer fit the viewport and the element resizes to unfold the back layer, giving the illusion of a scroll area. You can exit the fullscreen at any time by scrolling down or using the provided methods.
+
+The direct child with the attribute `slot="back-layer"` is the back layer, the rest will be place in the front layer.
+
+```html
+<app-header-fullscreen>
+  <div>Front Layer</div>
+  <div slot="back-layer">Back Layer</div>
+</app-header-fullscreen>
+<div>Content</div>
+```
+
+@group App Elements
+@element app-header
+@demo demo/index.html Index
+@demo demo/fullscreen-toolbar.html Fullscreen Toolbar
+@demo demo/header-gallery.html Header Gallery
+@demo demo/header-video.html Header Video
+@demo demo/content-toolbar.html Content Toolbar
+-->
+
+<dom-module id="app-header-fullscreen">
+  <template>
+    <style>
+
+      :host {
+        display: block;
+      }
+      #headerWrapper {
+        @apply(--layout-fixed-top);
+      }
+      #layersContainer {
+        overflow: hidden;
+        background: var(--app-header-fullscreen-background, none);
+      }
+      #frontLayer {
+        @apply(--app-header-fullscreen-front-layer);
+        @apply(--layout-fixed-top);
+      }
+      #backLayerWrapper {
+        @apply(--layout-fixed-top);
+      }
+      #backLayer {
+        position: relative;
+      }
+      /* To remove when implemented in resize-title effect */
+      #frontLayer ::slotted(* [main-title]),
+      #frontLayer ::slotted(* [condensed-title]) {
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+        white-space: nowrap;
+      }
+      :host([waterfall-shadow]) #headerWrapper::after {
+        position: absolute;
+        right: 0px;
+        left: 0px;
+        width: 100%;
+        content: "";
+        transition: opacity 0.4s;
+        pointer-events: none;
+        opacity: 0;
+        will-change: opacity;
+      }
+      #headerWrapper::after {
+        height: 5px;
+        bottom: -5px;
+        box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+      }
+      :host(:not([condensed])) #headerWrapper::after {
+        opacity: 1;
+      }
+    </style>
+    
+    <div id="headerWrapper">
+      <div id="layersContainer">
+        <div id="backLayer">
+          <slot name="back-layer"></slot>
+        </div>
+        <div id="frontLayer">
+          <slot id="frontContent"></slot>
+        </div>
+      </div>
+    </div>
+
+  </template>
+
+  <script>
+  'use strict';
+    Polymer({
+      is: 'app-header-fullscreen',
+
+      observers: [
+        '_fullscreenChanged(fullscreen)',
+        '_fullscreenLeftAtChanged(fullscreenLeftAt)',
+        '_lockLayersIfNeeded(condensed)'
+      ],
+
+      behaviors: [
+        Polymer.AppScrollEffectsBehavior,
+        Polymer.IronResizableBehavior
+      ],
+
+      listeners: {
+        'iron-resize': '_resizeHandler'
+      },
+
+      properties: {
+        /**
+         * 
+         */
+        fullscreen: {
+          type: Boolean,
+          notify: true,
+          readOnly: true,
+          reflectToAttribute: true
+        },
+        /**
+         * The initial content scroll top.
+         */
+        initialContentScroll: {
+          type: Number,
+          value: 0
+        },
+        /**
+         * The initial header scroll top.
+         */
+        initialHeaderScroll: {
+          type: Number,
+          value: 0
+        },
+        /**
+         * The initial fullscreen state.
+         */
+        initialFullscreen: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * 
+         */
+        condensed: {
+          type: Boolean,
+          notify: true,
+          readOnly: true,
+          reflectToAttribute: true
+        },
+        /**
+         * **Read only and default to true as false is not yet accepted**
+         * 
+         * If true, the header will automatically collapse when scrolling down.
+         * That is, the `sticky` element remains visible when the header is fully condensed
+         * whereas the rest of the elements will collapse below `sticky` element.
+         *
+         * By default, the `sticky` element is the first toolbar in the light DOM:
+         *
+         *```html
+         * <app-header-fullscreen condenses>
+         *   <app-toolbar>This toolbar remains on top</app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         * </app-header-fullscreen>
+         * ```
+         *
+         * Additionally, you can specify which toolbar or element remains visible in condensed mode
+         * by adding the `sticky` attribute to that element. For example: if we want the last
+         * toolbar to remain visible, we can add the `sticky` attribute to it.
+         *
+         *```html
+         * <app-header-fullscreen condenses>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar sticky>This toolbar remains on top</app-toolbar>
+         * </app-header-fullscreen>
+         * ```
+         *
+         * Note the `sticky` element must be a direct child of `app-header`.
+         */
+        condenses: {
+          type: Boolean,
+          value: true,
+          readOnly: true
+        },
+        /**
+         * **Missing Feature** 
+         * 
+         * Mantains the header fixed at the top so it never moves away.
+         */
+        fixed: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * The scroll top where the fullscreen was left. Null if `fullscreen` is true.
+         * Use the setteur on `headerScrollTop` if you want to change this value programmatically.
+         */
+        fullscreenLeftAt: {
+          type: Number,
+          readOnly: true
+        },
+        /**
+         * Create a sense of depth (as recommended in the MD spec) between the header and the underneath content.
+         */
+        waterfallShadow: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      /**
+      * The fullscreen should be exited when the scrollTop reach this value.
+      */
+      _exitFullscreenThreshold: null,
+
+      /**
+      * The header can enter in fullscreen if his _fullHeight is larger or equal to the _backLayerViewportHeight.
+      */
+      _fullscreenAllowed: null,
+
+      /**
+       * The scroll Height of the header when it is fully deployed.
+       */
+      _fullHeight: null,
+
+      /**
+      * A cached clientHeight of the scrollTarget
+      */
+      _backLayerViewportHeight: null,
+
+      /**
+       * The element that remains visible when the header condenses.
+       *
+       * @type {HTMLElement}
+       */
+      _stickyEl: null,
+
+      /**
+      * A cached clientHeight of the scrollTarget
+      */
+      _stickyElHeight: null,
+
+      /**
+       * The offsetTop of `_stickyEl`
+       *
+       * @type {number}
+       */
+      _stickyElTop: 0,
+
+      /**
+       * The distance in pixels the header will be translated to when scrolling.
+       *
+       * @type {number}
+       */
+      _dHeight: 0,
+
+      attached: function() {
+        this.fetchStickyEl();
+        this.resetScroll(this.initialHeaderScroll, this.initialContentScroll, this.initialFullscreen);
+      },
+
+      /**
+       * Exit the fullscreen from the current scroll top. Do nothing if fullscreen is already exited.
+       *
+       * @return {number} The new headerScrollTop value.
+       */
+      exitFullscreen: function() {
+        this._setFullscreen(false);
+        return this.fullscreenLeftAt;
+      },
+
+      /**
+       * This methode perform a silent scroll to a particular place in the layout.
+       * 
+       * @param  {number} headerScrollTop
+       * @param  {number} contentScrollTop
+       * @param  {boolean} fullscreen
+       */
+      resetScroll: function(headerScrollTop, contentScrollTop, fullscreen) {
+        fullscreen = fullscreen && this._fullscreenAllowed;
+        headerScrollTop = this._clampHeaderScrollTop(headerScrollTop);
+        this._setFullscreen(fullscreen);
+        this._scrollPreventFullscreenToggle(headerScrollTop + (!fullscreen && Math.max(0, contentScrollTop)));
+      },
+
+      /**
+       * Enter the fullscreen if possible according to the current scroll top.
+       */
+      tryEnterFullscreen: function() {
+        if (!this.fullscreen && this._fullscreenAllowed && this._scrollTop <= this.fullscreenLeftAt) {
+          this._setFullscreen(true);
+        }
+      },
+
+      /**
+       * Perform a smooth scroll to enter the fullscreen state.
+       */
+      scrollToFullscreen: function() {
+        if (!this.fullscreen) {
+          Polymer.AppLayout.scroll({top: this.fullscreenLeftAt, behavior: 'smooth'});
+        }
+      },
+
+      /**
+       * Perform a smooth scroll to exit the fullscreen state using `intial-content-scroll`.
+       */
+      scrollExitFullscreen: function() {
+        if (this.fullscreen || this._scrollTop == this.fullscreenLeftAt) {
+          Polymer.AppLayout.scroll({top: this.exitFullscreen() + this.initialContentScroll, behavior: 'smooth'});
+        }
+      },
+
+      /**
+       * Perform a smooth scroll to toggle the fullscreen state using `intial-content-scroll`.
+       */
+      scrollToggleFullscreen: function() {
+        !this.fullscreen ?
+          Polymer.AppLayout.scroll({top: this.fullscreenLeftAt, behavior: 'smooth'}) :
+          Polymer.AppLayout.scroll({top: this.exitFullscreen() + this.initialContentScroll, behavior: 'smooth'});
+      },
+
+      /**
+       * Getteur of the header scroll top. Equal to the scrollTop of the scroll-target in fullscreen,
+       * otherwise, the scrollTop where the fullscreen has been left.
+       * 
+       * @return {number}
+       */
+      get headerScrollTop() {
+        return this.fullscreen ? this._scrollTop : this.fullscreenLeftAt;
+      },
+
+      /**
+       * Set the scroll top of the header. Will scroll to the given value in fullscreen,
+       * otherwise, `fullscreenLeftAt` is change and a scroll is performed to give the
+       * illusion that the page stay fixe.
+       * 
+       * @param  {number} headerScrollTop
+       */
+      set headerScrollTop(headerScrollTop) {
+        headerScrollTop = this._clampHeaderScrollTop(headerScrollTop);
+        if (this.fullscreen) {
+          this._scrollTop = headerScrollTop;
+        } else {
+          var oldHeaderScrollTop = this.fullscreenLeftAt;
+          this._scrollTop += headerScrollTop - oldHeaderScrollTop;
+          this._setFullscreenLeftAt(headerScrollTop);
+        }
+      },
+
+      /**
+       * Get the node references for the scroll effects required by Polymer.app-scroll-effects-behavior.
+       */
+      _getDOMRef: function(id) {
+        switch (id) {
+          case 'backLayer':
+            return this.$.backLayer;
+          case 'frontLayer':
+            return this.$.frontLayer;
+          case 'mainTitle':
+            return Polymer.dom(this).querySelector('[main-title]');
+          case 'condensedTitle':
+            return Polymer.dom(this).querySelector('[condensed-title]');
+        }
+        return null;
+      },
+
+      /**
+       * To scroll in a silent mode, without notifying scroll changes so _updateScrollState is not triggered. -> bug
+       */
+      _silentScroll: function(top) {
+        this.disabled = true;
+        this._scrollTop = top;
+        this.async(function() {
+          this.disabled = false;
+        },1);
+      },
+
+      /**
+       * 
+       */
+      _scrollPreventFullscreenToggle(top) {
+        this._silentScroll(top);
+        this._updateScrollState(top, true);
+        return this._scrollTop;
+      },
+
+      /**
+       * Updates the scroll state. Toggle the fullscreen state if needed, translate the layers and run the scroll effects
+       *
+       * @param {number} scrollTop
+       * @param {boolean} preventFullscreenToggle
+       */
+      _updateScrollState: function(scrollTop, preventFullscreenToggle) {
+        var shouldExitFullscreen = this.fullscreen && scrollTop > this._exitFullscreenThreshold;
+        var shouldEnterFullscreen = !this.fullscreen && this._fullscreenAllowed && scrollTop <= this.fullscreenLeftAt;
+        if (shouldEnterFullscreen || shouldExitFullscreen) {
+          if (preventFullscreenToggle) {
+            // scroll in order to maintain the fullscreen state
+            // without notifying, so _updateScrollState isn't call again
+            this._silentScroll(scrollTop = shouldEnterFullscreen ? this.fullscreenLeftAt : this._exitFullscreenThreshold);
+         } else {
+            this._setFullscreen(shouldEnterFullscreen);
+          }
+        }
+
+        var backLayerTop = scrollTop - this.fullscreenLeftAt;
+
+        this._setCondensed(this.fullscreen || this._dHeight >= backLayerTop);
+        if (this.fullscreen) {
+          this.translate3d(0, - scrollTop + 'px', 0, this.$.headerWrapper);
+          this.translate3d(0, scrollTop + 'px', 0, this.$.frontLayer);
+        } else if (this.condensed) {
+          var p = backLayerTop / this._dHeight;
+          this.translate3d(0, - scrollTop + 'px', 0, this.$.headerWrapper);
+          if (this._stickyEl && backLayerTop >= this._stickyElTop) {
+            this.translate3d(0, backLayerTop - this._stickyElTop + 'px', 0, this._stickyEl);
+          }
+          this._runEffects(p, backLayerTop);
+        }
+      },
+
+      /**
+       * Fetch the sticky element and reset the layout.
+       * Call this method if you change the node of the sticky element.
+       */
+      fetchStickyEl: function() {
+        var stickyEl;
+        var nodes = Polymer.dom(this.$.frontContent).getDistributedNodes();
+
+        for (var i = 0; i < nodes.length; i++) {
+          if (nodes[i].nodeType === Node.ELEMENT_NODE) {
+            var node = /** @type {HTMLElement} */ (nodes[i]);
+            if (node.hasAttribute('sticky')) {
+              stickyEl = node;
+              break;
+            } else if (!stickyEl) {
+              stickyEl = node;
+            }
+          }
+        }
+        this._stickyEl = stickyEl;
+        this.resetLayout();
+      },
+
+      /**
+       * Reset the layout. Perform mesurements according to the current size of the viewport, back-layer, sticky element.
+       * You can notify the changes by either firing the `iron-resize` event or calling `resetLayout` directly.
+       */
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+
+          this._fullHeight = this.$.backLayer.scrollHeight;
+
+          var _previousBackLayerViewportHeight = this._backLayerViewportHeight;
+          this._backLayerViewportHeight = Math.min(this.scrollTarget.clientHeight, this._fullHeight);
+
+          this.$.frontLayer.style.height = Math.min(this._fullHeight, this._backLayerViewportHeight)+'px';
+          this.style.height = this._fullHeight+'px';
+          if (!this.fullscreen) {
+            this._updateMaxHeight();
+          }
+          this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
+          this._stickyElHeight = this._stickyEl ? this._stickyEl.offsetHeight : 0;
+
+          this._dHeight = this._backLayerViewportHeight - this._stickyElHeight;
+
+          this._exitFullscreenThreshold = this._fullHeight - this._backLayerViewportHeight;
+
+          this._fullscreenAllowed = this._exitFullscreenThreshold >= 0;
+          if (!this._fullscreenAllowed) {
+            this.exitFullscreen();
+          }
+
+          if (this.fullscreenLeftAt != null 
+            && _previousBackLayerViewportHeight != null 
+            && _previousBackLayerViewportHeight != this._backLayerViewportHeight) {
+            this._setFullscreenLeftAt(this._clampHeaderScrollTop(this.fullscreenLeftAt));
+            if (!this.fullscreen && (this.fullscreenLeftAt < this._exitFullscreenThreshold)) {
+              this._silentScroll(this._scrollTop + this._backLayerViewportHeight - _previousBackLayerViewportHeight);
+            }
+          }
+
+          this._setCondensed(this.fullscreen || this._dHeight > this._scrollTop - this.fullscreenLeftAt);
+          this._lockLayersIfNeeded(this.condensed);
+
+          this._setUpEffect();
+          
+          if (this._fxResizeTitle) {
+            /* Work around : resize-title effect as issue with transformed parent */
+            var condensedTitle = this._getDOMRef('condensedTitle');
+            var title = this._getDOMRef('mainTitle');
+            var condensedTitleClientRect = condensedTitle.getBoundingClientRect();
+            var titleClientRect = title.getBoundingClientRect();
+            var frontLayerClientRect = this.$.frontLayer.getBoundingClientRect();
+            this._fxResizeTitle.titleDY = titleClientRect.top - condensedTitleClientRect.top - frontLayerClientRect.top;
+          }
+          this._updateScrollState(this._scrollTop, true);
+        });
+      },
+      
+      _resizeHandler: function() {
+        this.resetLayout();
+      },
+
+      _fullscreenLeftAtChanged: function(fullscreenLeftAt) {
+        if (fullscreenLeftAt == null) {
+          if (this._stickyEl) {
+            this.translate3d(0, 0, 0, this._stickyEl);
+          }
+          this.$.layersContainer.style.maxHeight = this.style.maxHeight = 'none';
+          this._runEffects(0, 0);
+        } else {
+          this.translate3d(0, fullscreenLeftAt+'px', 0, this.$.frontLayer);
+          this._updateMaxHeight();
+        }
+      },
+
+      _updateMaxHeight: function() {
+        this.style.maxHeight
+        = this.$.layersContainer.style.maxHeight
+        = (this.fullscreenLeftAt + this._backLayerViewportHeight)+'px';
+      },
+
+      _fullscreenChanged: function(fullscreen) {
+        this._setFullscreenLeftAt(
+          fullscreen ? null : this._clampHeaderScrollTop(this._scrollTop)
+        );
+      },
+
+      _lockLayersIfNeeded: function(condensed) {
+        if (!condensed) {
+          this.translate3d(0, - (this.fullscreenLeftAt + this._dHeight) + 'px', 0, this.$.headerWrapper);
+          if (this._stickyEl) {
+            this.translate3d(0, this._dHeight - this._stickyElTop + 'px', 0, this._stickyEl);
+          }
+          this._runEffects(1, this._dHeight);
+        }
+      },
+
+      _clampHeaderScrollTop: function(value) {
+        return Math.max(0, Math.min(value, this._exitFullscreenThreshold));
+      }
+    });
+  </script>
+</dom-module>

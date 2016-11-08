@@ -1,0 +1,178 @@
+
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../moment-element/moment-with-locales-import.html">
+<link rel="import" href="../../paper-fab/paper-fab.html">
+<link rel="import" href="../../paper-input/paper-textarea.html">
+<link rel="import" href="../../paper-styles/paper-styles.html">
+<link rel="import" href="../../iron-form-csrf/iron-form-csrf.html">
+<link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../neon-scroll-animations/neon-scroll-animations.html">
+
+<!--
+`mr-conversation`
+
+@demo demo/index.html 
+-->
+<dom-module id="mr-conversation">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        width: 400px;
+        height: 500px;
+        @apply(--layout-vertical);
+        @apply(--paper-font-common-base);
+        background: var(--paper-grey-50);
+        overflow: hidden;
+      }
+      .sended {
+        background: white;
+        @apply(--layout-self-end);
+      }
+      .recieved {
+        background: var(--paper-blue-400);
+        color: white;
+      }
+      .message {
+        padding: 16px;
+        max-width: 300px;
+        border-radius: 3px;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05), 0 3px 1px -2px rgba(0, 0, 0, 0.05);
+        margin: 14px;
+      }
+      .hour {
+        font-size: 12px;
+      }
+      .recieved .hour {
+        opacity: 0.7;
+      }
+      .sended .hour {
+        color: var(--paper-grey-400);
+      }
+      #chatBox {
+        height: auto;
+        @apply(--shadow-elevation-6dp);
+        background: white;
+        position: relative;
+      }
+      #chatFlow {
+        @apply(--layout-vertical);
+        overflow: scroll;
+        padding-bottom: 30px;
+      }
+      paper-fab {
+        --paper-fab: {
+          opacity: 0.94;
+          position: absolute;
+          top: -28px;
+          right: 52px;
+          transition: all 0.2s;
+        };
+        --paper-fab-disabled: {
+          opacity: 0.7;
+        };
+      }
+      paper-textarea {
+        padding: 20px;
+        --paper-input-container-color: var(--paper-grey-200);
+        transition: height 0.5s;
+      }
+      .date {
+        padding: 24px;
+        color: var(--paper-grey-300);
+        @apply(--paper-font-subhead);
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+      }
+    </style>
+    <div id="chatFlow">
+      <template id="domRepeat" is="dom-repeat" items="[[conversation]]">
+        <template is="dom-if" if="{{_isNewDay(item.date, index)}}">
+          <span class="date">{{_formatDate(item.date)}}</span>
+        </template>
+        <div class$="message {{_getUserClass(item.sender_ref)}}">
+          <span>[[item.text]]</span>
+          <span class="hour">{{_getHour(item.date)}}</span>
+        </div>
+      </template>
+    </div>
+    <div id="chatBox">
+      <paper-fab disabled="[[!message]]" icon="send" on-tap="_sendMessage"></paper-fab>
+      <iron-form-csrf id="messageForm" action="" method="post"
+          on-iron-form-response="_messageFormResponseHandler">
+      <paper-textarea id="textarea" minlength="1" value="{{message}}" max-rows="9" placeholder="Entrez votre message…"></paper-textarea>
+      </iron-form-csrf>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-conversation',
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+        conversation: {
+          type: Object
+        },
+        userRef:  {
+          type: String
+        },
+        message: {
+          type: String,
+          value: ''
+        },
+        animationConfig: {
+          value: function() {
+            return {
+              'scroll-bottom': {
+                name: 'neon-scroll-animations',
+                node: this.$.chatFlow,
+                yShift: 'bottom'
+              }
+            };
+          }
+        }
+      },
+
+      _getUserClass: function(sender_ref) {
+        return sender_ref == this.userRef ? 'sended' : 'recieved';
+      },
+
+      _getHour: function(date) {
+        return moment(date).format("HH:mm");
+      },
+
+      _isNewDay: function(date, index) {
+        return !index || moment(date).diff(moment(this.conversation[index-1].date), "day") > 0; 
+      },
+
+      _formatDate: function(date) {
+        return moment(date).format('ll');
+      },
+
+      _sendMessage: function() {
+        this.$.messageForm.submit();
+      },
+
+      _messageFormResponseHandler: function(e) {
+        console.log(e);
+        this.push('conversation', {
+          "sender_ref": "R7UHS9JJS0",
+          "recipient_ref": "LJD087DJD8", 
+          "date": new Date(),
+          "text": this.message
+        });
+        this.$.textarea.value = '';
+        this.async(function() {
+          this.playAnimation('scroll-bottom');
+        });
+      }
+
+    });
+  </script>
+</dom-module>

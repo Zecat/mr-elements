@@ -1,0 +1,140 @@
+<link rel="import" href="../../gold-email-input/gold-email-input.html">
+<link rel="import" href="../../gold-phone-input/gold-phone-input.html">
+<link rel="import" href="../../iron-ajax/iron-ajax.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-form-csrf/iron-form-csrf.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../paper-input-image/paper-input-image.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../paper-input/paper-textarea.html">
+<link rel="import" href="../../paper-item/paper-item.html">
+<link rel="import" href="../../paper-listbox/paper-listbox.html">
+<link rel="import" href="../../paper-stepper/paper-step.html">
+<link rel="import" href="../../paper-stepper/paper-stepper.html">
+<link rel="import" href="../../paper-toast-patterns/paper-toast-firer-behavior.html">
+<link rel="import" href="../../paper-date-input/paper-date-input.html">
+
+<dom-module id="mr-register">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+      }
+    </style>
+    
+    <iron-ajax id="ajaxSendMailAgain" url="/confirmation/mail"
+      params='{"userKey":"[[userKey]]"}' debounce-duration="1000"
+      on-response="mailSentAgain">
+    </iron-ajax>
+
+    <paper-stepper continue-text="Continuer" vertical>
+      <paper-step id="step1" label="Renseignez vos identifiants" on-continue="submitForm1">
+        <iron-form-csrf id="form1" action="/auth/register" method="post"
+          on-iron-form-response="form1ResponseHandler">
+          <gold-email-input name="email" label="Email*" value="{{email}}"
+            required error-message="Votre email est invalide">
+          </gold-email-input>
+          <paper-input required name="password" type="password"
+            label="Mot de passe*" error-message="erreur">
+          </paper-input>
+          <paper-input required name="password_confirmation" type="password"
+            label="Confirmer le mot de passe*" error-message="erreur">
+          </paper-input>
+          <!-- CGU -->
+        </iron-form-csrf>
+      </paper-step>
+      <paper-step label="Validez votre email">
+        <div>Consultez votre boite mail et cliquez sur le lien que vous a 
+          envoyé MyRochelle pour valider votre compte.</div>
+        <div>Je ne reçoie pas le mail ?</div>
+        <div>Pensez à vérifier vos courriers indésirables, si le problème   
+          persiste cliquez sur sur le button ci-dessous pour renvoyer le mail à [[email]] .</div>
+        <paper-button on-tap="sendMailAgain">Renvoyer le mail</paper-button>
+      </paper-step>
+      <paper-step id="step3" label="Complétez votre profil" on-continue="submitForm2">
+        <iron-form-csrf id="form2" action="user/[[userKey]]" method="post"
+          on-iron-form-response="form2ResponseHandler">
+<!--             <input type="hidden" name="user_key" value="[[userKey]]">
+-->            <paper-input label="Prénom*" name="firstname" required></paper-input>
+          <paper-input label="Nom*" name="lastname" required></paper-input>
+          <paper-input-image name="avatar"></paper-input-image>
+          <paper-dropdown-menu label="Civilité" name="sexe">
+            <paper-listbox class="dropdown-content">
+              <paper-item>Monsieur</paper-item>
+              <paper-item>Madame</paper-item>
+              <paper-item>Mademoiselle</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-date-input label="Date de naissance*" date-format="DD/MM/YYYY"></paper-date-input>
+          <!-- address -->
+          <paper-textarea label="Description" row="3"></paper-textarea> 
+          <gold-phone-input label="Numéro de telephone" name="phone_number"></gold-phone-input>
+          <gold-phone-input label="Numéro de telephone d'urgence" name="phone_urgency_number"></gold-phone-input>
+          <gold-phone-input label="call this"></gold-phone-input>
+        <!-- bic -->
+        </iron-form-csrf>
+      </paper-step>
+    </paper-stepper>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-register',
+
+      behaviors: [
+        Zecat.PaperToastFirerBehavior
+      ],
+
+      properties: {
+        userKey: String
+      },
+
+      listeners: {
+        'iron-overlay-opened': 'refit',
+        'iron-form-error': 'errorHandler',
+        'ajaxSendMailAgain.error': 'errorHandler'
+      },
+
+      attached: function() {
+        this.$.step1._getValidity = function() {
+          return this.$.form1.validate();
+        }.bind(this);
+
+        this.$.step3._getValidity = function() {
+          return this.$.form2.validate();
+        }.bind(this);
+      },
+
+      form1ResponseHandler: function(e) {
+        this.userKey = e.detail.response.key;
+      },
+
+      form2ResponseHandler: function(e) {
+
+      },
+
+      errorHandler : function() {
+        this.fireToast('error');
+      },
+
+      mailSentAgain: function(e) {
+        console.log(e.detail.response);
+      },
+
+      sendMailAgain: function() {
+        this.$.ajaxSendMailAgain.generateRequest();
+      },
+
+      submitForm1: function() {
+        this.$.form1.submit();
+      },
+
+      submitForm2: function() {
+        this.$.form2.submit();
+      }
+      
+    });
+  </script>
+</dom-module>

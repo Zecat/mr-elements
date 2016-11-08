@@ -1,0 +1,23 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-signals/iron-signals.html">
+
+<script>
+
+  window.Zecat = window.Zecat || {};
+
+  /**
+  @demo demo/index.html
+  @polymerBehavior Zecat.PaperToastFirerBehavior
+  */
+  Zecat.PaperToastFirerBehavior = {
+    fireToast: function(type, text) {
+      this.fire('iron-signal', {
+        name: 'toast',
+        data: {
+          type: type,
+          text: text
+        }
+      });
+    }
+  }
+</script>

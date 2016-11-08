@@ -1,0 +1,25 @@
+{
+	"title": "Grand studio plein centre",
+	"type": "Appartement",
+	"vacationers": 3,
+	"rate": 4,
+	"price": 20,
+	"latitude": 46.153294,
+	"longitude": -1.137119,
+	"reference": "ABC",
+	"favorite": false,
+	"src": [
+		"image/a.jpg",
+		"image/b.jpg",
+		"image/c.jpg",
+		"image/d.jpg",
+		"image/e.jpg",
+		"image/f.jpg",
+		"image/g.jpg",
+		"image/h.jpg",
+		"image/i.jpg",
+		"image/j.jpg",
+		"image/k.jpg",
+		"image/l.jpg"
+	]
+}

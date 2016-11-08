@@ -1,0 +1,129 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="calendar-generation-behavior.html">
+<link rel="import" href="calendar-multi-selectable-behavior.html">
+<link rel="import" href="calendar-shared-styles.html">
+
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <multi-selectable-calendar></multi-selectable-calendar>
+@demo demo/selectable.html
+@hero hero.svg
+-->
+
+<dom-module id="multi-selectable-calendar">
+  <template>
+    <style include="calendar-shared-styles">
+      :host.touch-selecting #scrollThreshold{
+        overflow: hidden !important;
+      }
+      .dayWrapper.selected {
+        background: var(--paper-blue-50);
+      }
+      .dayWrapper.selecting {
+        color: var(--paper-blue-800);
+      }
+      .monthDays, .day {
+        pointer-events: none;
+      }
+      .dayWrapper {
+        pointer-events: all;
+        transition: background 0.5s, color 0.5s;
+      }
+    </style>
+     <div class="week">
+      <template is="dom-repeat" items="[[_weekdays]]">
+        <div class="dayWrapper">
+          <div class="weekday">[[item]]</div>
+        </div>
+      </template>
+    </div>
+    <iron-scroll-threshold id="scrollThreshold"
+    lower-threshold="[[lowerThreshold]]"
+    upper-threshold="0"
+    on-lower-threshold="_loadLowerMonth"
+    on-upper-threshold="_loadUpperMonth">
+      <iron-list items="[[_months]]" as="month" id="ironList" scroll-target="scrollThreshold" selected-items="{{_changedMonths}}">
+        <template>
+          <div class="month">
+            <div class="month-name">[[_getMonthName(month.month)]] [[month.year]]</div>
+            <div class="monthDays">
+              <div style$="pointer-events: none; width: calc(14.285% * [[month.startWeekday]])"></div>
+              <template is="dom-repeat" items="[[month.days]]" as="day">
+                <div class$="dayWrapper{{_getSelectedClass(day.selected)}}{{_getSelectingClass(day.selecting)}}">
+                  <div class="day">{{_increment(index)}}</div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </iron-list>
+  </iron-scroll-threshold>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'multi-selectable-calendar',
+
+      behaviors: [
+        Polymer.CalendarMultiSelectableBehavior,
+        Polymer.CalendarGenerationBehavior
+      ],
+
+      observers: [
+        '_touchSelectingHandler(selecting, touching)'
+      ],
+
+      _getSelectedClass: function(selected) {
+        return selected ? ' selected': '';
+      },
+
+      _getSelectingClass: function(selecting) {
+        return selecting ? ' selecting': '';
+      },
+
+      _getDateFromTarget: function(target) {
+        return new Date(
+          Polymer.dom(Polymer.dom(target).parentNode).lastElementChild
+          .modelForElement(target).__data__.day.timestamp
+        );
+      },
+
+      _touchSelectingHandler: function(selecting, touching) {
+        if (selecting) {
+          if (touching) {
+            // avoid scrolling when selecting
+            this.toggleClass('touch-selecting', true);
+            // disable "swipe to refresh" on mobile
+            this.listen(this, 'touchmove', '_preventDefault');
+          } else {
+            this.toggleClass('touch-selecting', false);
+            this.unlisten(this, 'touchmove', '_preventDefault');
+          }
+        }
+      },
+
+      _preventDefault: function(e) {
+        e.preventDefault();
+      }
+
+  });
+  </script>
+</dom-module>

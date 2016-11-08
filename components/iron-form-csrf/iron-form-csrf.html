@@ -1,0 +1,63 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="iron-meta-token.html">
+<!--
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="iron-form-csrf">
+  <template>
+    <form is="iron-form"
+      id="form"
+      method="[[method]]"
+      action="[[action]]"
+      content-type="[[contentType]]"
+      disable-native-validation-ui="[[disableNativeValidationUi]]"
+      headers="[[headers]]"
+      request="[[request]]"
+      with-credentials="[[withCredentials]]">   
+      <iron-meta-token></iron-meta-token>
+      <content></content>
+    </form>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'iron-form-csrf',
+
+      properties: {
+        method: String,
+        action: String,
+        contentType: String,
+        disableNativeValidationUi: Boolean,
+        headers: Object,
+        request: Object,
+        withCredentials: Boolean
+      },
+
+      submit: function() {
+        this.$.form.submit();
+      },
+
+      serialize: function() {
+        return this.$.form.serialize();
+      },
+
+      validate: function() {
+        return this.$.form.validate();
+      }
+    });
+  </script>
+</dom-module>

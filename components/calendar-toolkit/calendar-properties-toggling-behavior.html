@@ -1,0 +1,164 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="moment-import.html">
+
+<script>
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.CalendarPropertiesManagementBehavior
+   */
+  Polymer.CalendarPropertiesTogglingBehavior = {
+
+    properties: {
+      _toggledIntervalStartDate: {
+        type: Date
+      },
+      _toggledIntervalEndDate: {
+        type: Date
+      },
+      _absToggledIntervalStartDate: {
+        type: Number,
+        observer: '_absToggledIntervalStartDateChange',
+        readOnly: true
+      },
+      _absToggledIntervalEndDate: {
+        type: Number,
+        observer: '_absToggledIntervalEndDateChange',
+        readOnly: true
+      },
+      _intervalToggledProperties: {
+        type: Array
+      }
+    },
+
+    observers: [
+      '_toggledIntervalChange(_toggledIntervalStartDate, _toggledIntervalEndDate)'
+    ],
+
+    _toggledIntervalChange: function(_toggledIntervalStartDate, _toggledIntervalEndDate) {
+        if (_toggledIntervalStartDate && _toggledIntervalEndDate) {
+          this._set_absToggledIntervalStartDate(Math.min(_toggledIntervalStartDate, _toggledIntervalEndDate));
+          this._set_absToggledIntervalEndDate(Math.max(_toggledIntervalStartDate, _toggledIntervalEndDate));
+        } else {
+          this._set_absToggledIntervalStartDate(null);
+          this._set_absToggledIntervalEndDate(null);
+        }
+    },
+
+    _absToggledIntervalStartDateChange: function(newValue, oldValue) {
+      if (!oldValue || !newValue) {
+        return;
+      }
+      if (newValue < oldValue) {
+        oldValue = moment(oldValue).subtract(1, 'day');
+      } else {
+        newValue = moment(newValue).subtract(1, 'day');
+      }
+      for (property of this._intervalToggledProperties) {
+        this.togglePropertyForInterval(newValue, oldValue, property);
+      }
+    },
+
+    _absToggledIntervalEndDateChange: function(newValue, oldValue) {
+      if (!newValue) {
+        return;
+      }
+      if (!oldValue) {
+        this.togglePropertyForDate(newValue, 'selected');
+        this.togglePropertyForDate(newValue, 'selecting');
+        return;
+      }
+      if (newValue > oldValue) {
+        oldValue = moment(oldValue).add(1, 'day');
+      } else {
+        newValue = moment(newValue).add(1, 'day');
+      }
+
+      for (property of this._intervalToggledProperties) {
+        this.togglePropertyForInterval(newValue, oldValue, property);
+      }
+    },
+
+    /**
+     * Be aware of your behaviors import order and override this method with your own logic to ensure months are generated for the given date.
+     */
+    generateMonthsUntil: function(date) {
+
+    },
+
+    getMonthIndexForDate: function(date) {
+      var firstMonth = this._months[0];
+      return moment(date).diff(moment([firstMonth.year, firstMonth.month]), 'month');
+    },
+  	
+  	togglePropertyForDate: function(date, property, boolean) {
+      var date = moment(date);
+      this.generateMonthsUntil(date);
+      this._togglePropertyForDateFromIndexes(this.getMonthIndexForDate(date), date.format('D') - 1, property, boolean);
+    },
+
+    togglePropertyForInterval: function(startDate, endDate, property, boolean) {
+      var startDate = moment(startDate);
+      var endDate = moment(endDate);
+      if (startDate.isSame(endDate)) {
+        this.togglePropertyForDate(startDate, property, boolean);
+        return;
+      }
+      // ensure months to select are generated
+      this.generateMonthsUntil(startDate);
+      this.generateMonthsUntil(endDate);
+      // order dates -> can be done usine moment.maximum & moment.minimum instead
+      if ( startDate.isAfter(endDate, 'day') ) {
+        var tmpDate = startDate;
+        startDate = endDate;
+        endDate = tmpDate;
+      }
+      var startDateMonthIndex = this.getMonthIndexForDate(startDate);
+      var endDateMonthIndex = this.getMonthIndexForDate(endDate);
+      var startDayIndex = parseInt(startDate.format('D')) -1;
+      var endDayIndex = parseInt(endDate.format('D'));
+
+      if (startDateMonthIndex == endDateMonthIndex) {
+        this._togglePropertyForDaysInMonthFromIndexes(startDayIndex, endDayIndex, startDateMonthIndex, property, boolean);
+      } else {
+        this._togglePropertyForDaysInMonthFromIndexes(startDayIndex, startDate.daysInMonth(), startDateMonthIndex, property, boolean);
+        this._togglePropertyForDaysInMonthFromIndexes(0, endDayIndex, endDateMonthIndex, property, boolean);
+        for (i = startDateMonthIndex + 1; i < endDateMonthIndex; i++) {
+          this._togglePropertyForMonthFromIndex(i, property, boolean);
+        }
+      }
+    },
+
+    togglePropertyForMonth: function(month, property, boolean) {
+      var month = moment(month);
+      this.generateMonthsUntil(month.startOf('month'));
+      this.generateMonthsUntil(month.endOf('month'));
+      this._togglePropertyForMonthFromIndex(this.getMonthIndexForDate(month), property, boolean);
+    },
+
+    _isEditablePropertyForIndexes: function(monthIndex, dayIndex, property) {
+      return property == 'disabled' || !this._months[monthIndex].days[dayIndex].disabled;
+    },
+
+    _togglePropertyForDaysInMonthFromIndexes: function(startDayIndex, endDayIndex, monthIndex, property, boolean) {
+      for(i = startDayIndex; i < endDayIndex; i++) {
+        if (this._isEditablePropertyForIndexes(monthIndex, i, property) ) {
+          this.set('_months.'+monthIndex+'.days.'+i+'.'+property,
+            (boolean == undefined) ? !this._months[monthIndex].days[i][property] : boolean);
+        }
+      }
+    },
+
+    _togglePropertyForMonthFromIndex: function(monthIndex, property, boolean) {
+      this._togglePropertyForDaysInMonthFromIndexes(0, this._months[monthIndex].days.length, monthIndex, property, boolean);
+    },
+
+    _togglePropertyForDateFromIndexes: function(monthIndex, dayIndex, property, boolean) {
+      if (this._isEditablePropertyForIndexes(monthIndex, dayIndex, property) ) {
+        this.set('_months.'+monthIndex+'.days.'+dayIndex+'.'+property,
+          (boolean == undefined) ? !this._months[monthIndex].days[dayIndex][property] : boolean);
+      }
+    }
+      
+  }
+
+</script>

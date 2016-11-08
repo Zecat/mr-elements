@@ -1,0 +1,33 @@
+{
+  "name": "paper-star-rating",
+  "version": "1.1.0",
+  "authors": [
+    "AlexisGeneau <contact@alexis-geneau.fr>"
+  ],
+  "description": "Rate system with star for polymer",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed"
+  ],
+  "main": "paper-star-rating.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.6",
+    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0.4",
+    "iron-behaviors": "PolymerElements/iron-behaviors#^1.0.12",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^1.0.6",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.2.2",
+    "paper-styles": "^1.1.4"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^3.4.0"
+  }
+}

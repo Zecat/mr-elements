@@ -1,0 +1,27 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-styles/demo-pages.html">
+<link rel="import" href="../paper-toast-firer-behavior.html">
+
+<dom-module id="toast-sender">
+  <template>
+
+    <paper-button on-tap="sendWarn">warning</paper-button>
+    <paper-button on-tap="sendInfo">info</paper-button>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'toast-sender',
+      behaviors: [
+        Zecat.PaperToastFirerBehavior
+      ],
+      sendWarn: function() {
+        this.fireToast('warn');
+      },
+      sendInfo: function() {
+        this.fireToast('info', 'A spermatozoid contains 37.5 mb of data.');
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,29 @@
+{
+  "name": "neon-scroll-animations",
+  "version": "0.1.0",
+  "authors": [
+    "Zecat <jullienfelix@gmail.com>"
+  ],
+  "description": "Animates the scrollLeft and scrollTop property of an element.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed"
+  ],
+  "main": "neon-scroll-animations.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/Zecat/neon-scroll-animations/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "neon-animation": "PolymerElements/neon-animation#^1.1.1"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "paper-button": "PolymerElements/paper-button#^1.0.11"
+  }
+}

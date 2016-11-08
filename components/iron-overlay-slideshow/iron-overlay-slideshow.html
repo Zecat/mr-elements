@@ -1,0 +1,190 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-image/iron-image.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../neon-animation/animations/transform-animation.html">
+<link rel="import" href="../neon-animation/animations/slide-left-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../neon-animation/neon-animated-pages.html">
+
+<dom-module id="iron-overlay-slideshow">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+      #front-layer {
+        @apply(--layout-fit);
+        z-index: 1;
+      }
+      iron-image {
+        @apply(--layout-fit);
+      }
+      #left-text-protection {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        top: 0;
+        width: 180px;
+        background: -webkit-linear-gradient(top,  rgba(0,0,0,0.4) 0%,rgba(0,0,0,0) 100%);
+        background: linear-gradient(to right,  rgba(0,0,0,0.4) 0%,rgba(0,0,0,0) 100%);
+        
+      }
+      #right-text-protection {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 180px;
+        background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.4) 100%);
+        background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.4) 100%);
+      }
+      paper-icon-button {
+        color: white;
+        --paper-icon-button-ink-color: #FFFFFF;
+      }
+      #close-button {
+        height: 55px;
+        width: 55px;
+        top: 30px;
+        right: 60px;
+        position: absolute;
+      }
+      .chevron-button {
+        position: absolute;
+        height: 100px;
+        width: 100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      #chevronRight {
+        right: 40px;
+      }
+      #chevronLeft {
+        left: 40px;
+      }
+      .chevronWrapper {
+        top: 100px;
+        bottom: 100px;
+        right: 0;
+        left: 0;
+        position: absolute;
+      }
+      neon-animated-pages {
+        @apply(--layout-fit);
+      }
+    </style>
+
+    <div id="front-layer">
+      <div id="left-text-protection">
+        <div class="chevronWrapper" on-mousemove="_mouseMoveLeftHandler" on-mouseenter="_mouseEnterLeftHandler" on-mouseleave="_mouseLeaveLeftHandler">
+          <paper-icon-button id="chevronLeft" class="chevron-button" icon="chevron-left" on-tap="_selectPrevious"></paper-icon-button>
+        </div>
+      </div>
+      <div id="right-text-protection">
+        <paper-icon-button id="close-button" icon="close" on-tap="_closeSlideshow"></paper-icon-button>
+        <div class="chevronWrapper" on-mousemove="_mouseMoveRightHandler" on-mouseenter="_mouseEnterRightHandler" on-mouseleave="_mouseLeaveRightHandler">
+          <paper-icon-button id="chevronRight" class="chevron-button" icon="chevron-right" on-tap="_selectNext"></paper-icon-button>
+        </div>
+      </div>
+    </div>
+
+    <neon-animated-pages id="slideshow" selected="0" entry-animation="fade-in-animation" exit-animation="slide-left-animation">
+      <template is="dom-repeat" items="[[srcArray]]">
+        <iron-image src="[[item]]" preload sizing="contain"></iron-image>
+      </template>
+    </neon-animated-pages>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'iron-overlay-slideshow',
+
+      behaviors: [
+        Polymer.IronOverlayBehavior
+      ],
+
+      listeners: {
+        'track': '_trackHandler',
+        'neon-animation-finish': '_animationFinished'
+      },
+
+      properties: {
+        srcArray: {
+          type: Array,
+          value: function() {
+            return []
+          }
+        },
+        selected: {
+          type: Number,
+          value: 0,
+          notify: true
+        }
+      },
+
+      _mouseEnterLeftHandler: function() {
+        this.$.chevronLeft.style.opacity = 1;
+      },
+
+      _mouseLeaveLeftHandler: function() {
+        this.$.chevronLeft.style.opacity = 0;
+      },
+
+      _mouseMoveLeftHandler: function(e) {
+        this.transform('translate3d(0, '+Math.min(Math.max(0, (e.y-150)), window.innerHeight-300)+'px, 0)', this.$.chevronLeft);
+      },
+
+      _mouseEnterRightHandler: function() {
+        this.$.chevronRight.style.opacity = 1;
+      },
+
+      _mouseLeaveRightHandler: function() {
+        this.$.chevronRight.style.opacity = 0;
+      },
+
+      _mouseMoveRightHandler: function(e) {
+        console.log(window.innerHeight-100)
+        this.transform('translate3d(0, '+Math.min(Math.max(0, (e.y-150)), window.innerHeight-300)+'px, 0)', this.$.chevronRight);
+      },
+
+      _trackHandler: function(e) {
+        switch (e.detail.state) {
+          case 'start':
+            console.log('track start');
+          break;
+          case 'track':
+                      console.log('tracking');
+
+          break;
+          case 'end':
+                        console.log('track end');
+
+
+        }
+      },
+
+      _selectPrevious: function() {
+        this.$.slideshow.selectPrevious();
+      },
+      _selectNext: function() {
+        this.$.slideshow.selectNext();
+        // this.animationConfig['slide-next'].node = this.$.selector.selectedItem;
+        // this.playAnimation('slide-next', this.$.selector.selectedItem);
+      },
+      _closeSlideshow: function() {
+        this.close();
+      }
+
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,112 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="moment-import.html">
+<link rel="import" href="date-selection-behavior.html">
+<link rel="import" href="calendar-properties-toggling-behavior.html">
+
+<script>
+  /**
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.CalendarIntervalSelectableBehavior
+   */
+  Polymer.CalendarIntervalSelectableBehaviorImpl = {
+  	
+  	properties: {
+      immediateStartDate: {
+        type: Date,
+        observer: '_immediateStartDateChange',
+        notify: true
+      },
+      immediateEndDate: {
+        type: Date,
+        observer: '_immediateEndDateChange',
+        notify: true
+      },
+      startDate: {
+        type: Date,
+        observer: '_startDateChange',
+        notify: true
+      },
+      endDate: {
+        type: Date,
+        observer: '_endDateChange',
+        notify: true
+      },
+      activeDate: {
+        observer: 'activeDateChange'
+      },
+      selectedBound: {
+        type: Number,
+        value: 0,
+        observer: '_selectedBoundChange'
+      }
+    },
+
+    ready: function() {
+      this._intervalToggledProperties = ['selected'];
+    },
+
+    activeDateChange: function(newValue) {
+      if (!newValue) {
+        return;
+      }
+      if (this.selectedBound == 0) {
+        this.startDate = newValue;
+        this.selectedBound++;
+      }
+      else if (this.selectedBound == 1) {
+        this.endDate = newValue;
+      }
+    },
+
+    _selectedBoundChange: function(selectedBound) {
+    },
+
+    _startDateChange: function(newValue, oldValue) {
+      if (oldValue) {
+        this.togglePropertyForDate(oldValue, 'start', false);
+      }
+      if (!newValue) {
+        this._toggledIntervalStartDate = null;
+        this._toggledIntervalEndDate = null;
+      } else {
+        this._toggledIntervalStartDate = newValue;
+        this._toggledIntervalEndDate = newValue;
+        this.togglePropertyForDate(newValue, 'start', true);
+      }
+    },
+
+    _endDateChange: function(newValue, oldValue) {
+      if (oldValue) {
+        this.togglePropertyForDate(oldValue, 'end', false);
+      }
+
+      if (newValue) {
+        this._toggledIntervalEndDate = newValue;
+        this.togglePropertyForDate(newValue, 'end', true);
+      }
+
+      if (!newValue) {
+        this._toggledIntervalEndDate = null;
+      }
+
+      // if (this.hoveredDate && this.startDate && this.hoveredDate > this.startDate) {
+      //   this._toggledIntervalEndDate = this.hoveredDate;
+      // } else {
+      //   this._toggledIntervalEndDate = newValue;
+      //   if (!newValue) {
+      //     return;
+      //   }
+      // }
+      // this.togglePropertyForDate(this._toggledIntervalEndDate, 'end', true);
+    },
+
+  };
+
+  /** @polymerBehavior */  
+  Polymer.CalendarIntervalSelectableBehavior = [
+    Polymer.CalendarPropertiesTogglingBehavior,
+    Polymer.DateSelectionBehavior,
+    Polymer.CalendarIntervalSelectableBehaviorImpl
+  ];
+
+</script>
