@@ -1,0 +1,137 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-selector/iron-selector.html">
+<link rel="import" href="../../paper-material/paper-material.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../iron-overlay-slideshow/iron-overlay-slideshow.html">
+<link rel="import" href="mr-masonry-wall.html">
+
+<dom-module id="mr-housing-page">
+  <template>
+    <style>
+      /* TODO : Use % instead of vh/vw*/
+      :host {
+        display: block;
+        box-sizing: border-box;
+        height: 100vh;
+        @apply(--layout-scroll);
+      }
+      :host.overflow-hidden {
+        overflow: hidden;
+      }
+      #masonry {
+        transition: opacity 0.5s;
+        margin-bottom: 200px;
+        box-sizing: border-box;
+        margin: 5px;
+      }
+      #masonryBackground {
+        width: 100%;
+        position: relative;
+        height: 70vh;
+        will-change: height;
+        transition: height 0.5s;
+        overflow: hidden;
+      }
+      #masonryBackground.iron-selected {
+        height: 100vh;
+        @apply(--layout-scroll);
+      }
+      paper-material {
+        width: 80%;
+        height: 1000px;
+        margin: auto;
+        margin-top: -100px;
+        @apply(--layout-vertical);
+      }
+      #header {
+        height: 100px;
+        background: -webkit-linear-gradient(rgba(255,255,255,0.5) 0%, rgba(245,245,245,1) 100%);
+        background: -o-linear-gradient(rgba(255,255,255,0.5) 0%, rgba(245,245,245,1) 100%);
+        background: linear-gradient(rgba(255,255,255,0.5) 0%, rgba(245,245,245,1) 100%);
+      }
+      h1 {
+        padding: 35px;
+        @apply(--paper-font-title);
+        margin: 0;
+      }
+      #main:not(.iron-selected) {
+        cursor: pointer;
+      }
+    </style>
+    
+    <iron-selector selected="{{selectedLayout}}">
+      <mr-masonry-wall id="masonryBackground" src-array="[[housing.src]]" on-image-tap="_imageTapped" on-header-image-loaded="_headerImageLoaded"></mr-masonry-wall>
+      <paper-material elevation="1" id="main">
+        <div id="header">
+          <h1>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</h1>
+        </div>
+      </paper-material>
+    </iron-selector>
+    <iron-overlay-slideshow with-backdrop id="slideshow" src-array="[[housing.src]]">
+    </iron-overlay-slideshow>
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-housing-page',
+
+      properties: {
+        selectedLayout: {
+          type: Number,
+          value: 1,
+          observer: '_selectedLayoutChanged'
+        },
+        housing: Object
+      },
+
+      /**
+       * FROM https://github.com/PolymerElements/paper-scroll-header-panel/blob/master/paper-scroll-header-panel.html
+       */
+      _scroll:function(element, top, duration) {
+        // TODO: use CSS scroll-behavior once it ships in Chrome.
+        var easingFn = function easeOutQuad(t, b, c, d) {
+          t /= d;
+          return -c * t*(t-2) + b;
+        };
+        var animationId = Math.random();
+        var startTime = Date.now();
+        var currentScrollTop = element.scrollTop;
+        var deltaScrollTop = top - currentScrollTop;
+        this._currentAnimationId = animationId;
+        (function updateFrame() {
+          var now = Date.now();
+          var elapsedTime = now - startTime;
+          if (elapsedTime > duration) {
+            element.scrollTop = top;
+          } else if (this._currentAnimationId === animationId) {
+            element.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+            requestAnimationFrame(updateFrame.bind(this));
+          }
+        }).call(this);
+      },
+
+      _headerImageLoaded: function() {
+        // scroll in the background to align the header image with the bottom of the background box
+        this._scroll(this.$.masonryBackground, this.$.masonryBackground.$.headerImage.clientHeight - window.innerHeight*0.7, 700);
+      },
+
+      _imageTapped: function(e) {
+        if (!this.selectedLayout) {
+          this.$.slideshow.selected = e.detail.index;
+          this.$.slideshow.open();
+        }
+      },
+
+      _selectedLayoutChanged: function(layout) {
+        // layout -> 0: background selected, 1: main selected
+        if (!layout) {
+          // scroll main to top
+          this._scroll(this, 0, 500);
+        }
+        // TODO: simplify this using 'iron-selected' class
+        this.toggleClass('scroll', layout);
+        this.toggleClass('overflow-hidden', !layout);
+      }
+      
+    });
+  </script>
+</dom-module>

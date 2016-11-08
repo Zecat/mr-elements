@@ -1,0 +1,176 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>fullscreen-toolbar Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../paper-tabs/paper-tabs.html">
+    <link rel="import" href="../../iron-image/iron-image.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+    <link rel="import" href="../../paper-styles/typography.html">
+    <link rel="import" href="../../iron-scroll-spy/iron-auto-scroll-spy.html">
+    <link rel="import" href="../app-header-fullscreen.html">
+    <link rel="import" href="../effects/parallax-back.html">
+
+    <link rel="import" href="demo-helpers/sample-content.html">
+    <link rel="import" href="demo-helpers/cat-grid-list.html">
+    <link rel="import" href="demo-helpers/demo-icons.html">
+  </head>
+  <body unresolved>
+
+  <template is="dom-bind" id="app">
+
+    <style is="custom-style" include="app-grid-style">
+
+      :root {
+        --primary-color: var(--paper-brown-900);
+        --accent-color: var(--paper-lime-a200);
+        --secondary-color: white;
+      }
+
+      body {
+        margin: 0;
+        @apply(--paper-font-common-base);
+      }
+      .flex {
+        position: relative;
+        @apply(--layout-flex);
+      }
+      #header {
+        color: var(--accent-color);
+        z-index: 3;
+        position: relative;
+        --app-header-fullscreen-front-layer: {
+          @apply(--layout-vertical);
+        };
+      }
+      paper-icon-button{
+        color: var(--secondary-color);
+      }
+      #stickyToolbar {
+        z-index: 1;
+      }
+      #backLayer {
+        background-color: var(--primary-color);
+        margin-bottom: 64px;
+      }
+      #fullscreenToolbar {
+        pointer-events: visible;
+        cursor: pointer;
+        background-color: var(--primary-color);
+      }
+      paper-tabs {
+        height: 100%;
+        --paper-tabs-selection-bar-color: var(--accent-color);
+        --paper-tabs-selection-bar: {
+          height: 4px;
+        }
+      }
+      paper-tab {
+        color: var(--secondary-color);
+      }
+
+      #condensedShadow, #fullscreenShadow {
+        position: absolute;
+        right: 0px;
+        left: 0px;
+        bottom: 0;
+        width: 100%;
+        transition: opacity 0.4s;
+        pointer-events: none;
+        opacity: 0;
+        will-change: opacity;
+      }
+      #fullscreenShadow {
+        height: 50px;
+        box-shadow: inset 0px -25px 40px -20px rgba(0, 0, 0, 0.6);
+      }
+      #condensedShadow {
+        height: 300px;
+        box-shadow: inset 0px -200px 200px -100px rgba(0, 0, 0, 0.6);
+      }
+      #header[fullscreen] #fullscreenShadow,
+      #header:not([fullscreen]) #condensedShadow {
+        opacity: 1;
+      }
+        
+    </style>
+
+    <iron-auto-scroll-spy selected="{{selected}}" scroll-target="document">
+
+      <app-header-fullscreen
+        id="header"
+        condenses
+        waterfall-shadow
+        fullscreen="{{fullscreen}}"
+        initial-content-scroll="200"
+        effects="parallax-back">
+
+        <app-toolbar id="stickyToolbar">
+          <a href="index.html" tabindex="-1">
+            <paper-icon-button icon="demo:arrow-back"></paper-icon-button>
+          </a>
+        </app-toolbar>
+
+        <div class="flex">
+          <div id="condensedShadow"></div>
+          <div id="fullscreenShadow"></div>
+        </div>
+
+        <app-toolbar
+          id="fullscreenToolbar"
+          on-mouseenter="_exitFullscreen"
+          on-mouseleave="_tryEnterFullscreen"
+          on-down="_exitFullscreen"
+          on-tap="_scrollExitFullscreen">
+          <paper-tabs spacer selected="{{selected}}">
+            <paper-tab>GALLERY</paper-tab>
+            <paper-tab>WHO WE ARE</paper-tab>
+            <paper-tab>OUR MISSION</paper-tab>
+            <paper-tab>CONTACT US</paper-tab>
+          </paper-tabs>
+        </app-toolbar>
+
+        <div id="backLayer" slot="back-layer">
+          <cat-grid-list></cat-grid-list>
+        </div>
+
+      </app-header-fullscreen>
+
+      <sample-content size="3"></sample-content>
+      <sample-content size="3"></sample-content>
+      <sample-content size="3"></sample-content>
+      
+    </iron-auto-scroll-spy>
+
+  </template>
+  
+  <script>
+    var app = document.getElementById('app');
+
+    app._exitFullscreen = function() {
+      app.$.header.exitFullscreen();
+    }
+    app._tryEnterFullscreen = function() {
+      app.$.header.tryEnterFullscreen();
+    }
+    app._scrollExitFullscreen = function() {
+      app.$.header.scrollExitFullscreen();
+    }
+
+  </script>
+
+  </body>
+</html>

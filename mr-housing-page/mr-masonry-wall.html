@@ -1,8 +1,5 @@
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-image/iron-image.html">
-<link rel="import" href="../../neon-animation/animations/cascaded-animation.html">
-<link rel="import" href="../../neon-animation/animations/fade-in-animation.html">
-<link rel="import" href="../../neon-animation/animations/slide-from-bottom-animation.html">
 <link rel="import" href="../../neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="masonry-import.html">
 
@@ -15,7 +12,6 @@
       }
       #masonry {
         transition: opacity 0.5s;
-        margin-bottom: 200px;
         box-sizing: border-box;
         margin: 5px;
       }
@@ -35,7 +31,6 @@
         height: auto;
         padding: 5px;
         box-sizing: border-box;
-        opacity: 0;
       }
       .masonry-item ::content img {
         width: 100% !important;
@@ -56,11 +51,11 @@
         }
       }
     </style>
-    <iron-image id="headerImage" src="[[srcArray.0]]" preload fade loaded="{{headerImageLoaded}}" on-tap="_imageTapped"></iron-image>
+    <iron-image id="headerImage" src="[[srcArray.0]]" preload fade loaded="{{headerImageLoaded}}" on-height-changed="_headerHeightChanged" on-tap="_imageTapped"></iron-image>
     <div id="masonry">
       <div class="masonry-sizer"></div>
       <template is="dom-repeat" items="[[_masonrySrcArray]]">
-        <iron-image class="masonry-item" src="[[item]]" preload on-loaded-changed="_masonryImageLoaded" on-tap="_imageTapped"></iron-image>
+        <iron-image class="masonry-item" src="[[item]]" preload fade on-loaded-changed="_masonryImageLoaded" on-tap="_imageTapped"></iron-image>
       </template>
     </div>
   </template>
@@ -68,30 +63,7 @@
     Polymer({
       is: 'mr-masonry-wall',
 
-      behaviors: [
-        Polymer.NeonAnimationRunnerBehavior
-      ],
-
-      listeners: {
-        'neon-animation-finish': 'animationFinished'
-      },
-
       properties: {
-        animationConfig: {
-          value: function() {
-            return {
-              'masonry-cascade': [{
-                name: 'cascaded-animation',
-                animation: 'slide-from-bottom-animation',
-                nodeDelay: 100
-              },{
-                name: 'cascaded-animation',
-                animation: 'fade-in-animation',
-                nodeDelay: 100
-              }]
-            }
-          }
-        },
         headerImageLoaded: {
           type: Boolean,
           value: false,
@@ -115,22 +87,14 @@
         _masonry: Object
       },
 
-      animationFinished: function(e, data) {
-        switch (data.animation) {
-          case 'masonry-cascade':
-            for (image of Polymer.dom(this.$.masonry).querySelectorAll('iron-image')) {
-              image.style.opacity = 1;
-            }
-        }
-      },
-
       _computeMasonrySrcArray: function(srcArray) {;
         return srcArray.slice(1);
       },
 
       _headerImageLoadedChanged: function(headerImageLoaded) {
         if (headerImageLoaded) {
-          this.fire('header-image-loaded');
+          this.fire('header-image-loaded', {headerHeight: this.$.headerImage.clientHeight});
+          this.$.masonry.style.opacity = 1;
         }
       },
 
@@ -150,9 +114,7 @@
           itemSelector: '.masonry-item',
           columnWidth: '.masonry-sizer'
         });
-        var items = Polymer.dom(this.$.masonry).querySelectorAll('iron-image');
-        this.animationConfig['masonry-cascade'][0].nodes = this.animationConfig['masonry-cascade'][1].nodes = items;
-        this.playAnimation('masonry-cascade', {animation: 'masonry-cascade'});
+        this.fire('iron-resize');
       },
 
       _imageTapped: function(e) {

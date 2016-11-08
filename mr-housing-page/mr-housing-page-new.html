@@ -1,0 +1,138 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../app-header-fullscreen-layout/app-header-fullscreen-layout.html">
+<link rel="import" href="../../app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../paper-tabs/paper-tabs.html">
+<link rel="import" href="../../paper-tabs/paper-tab.html">
+<link rel="import" href="../../paper-styles/color.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="mr-masonry-wall.html">
+
+<dom-module id="mr-housing-page-new">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .header-content{
+        height: 2000px;
+        width: 100%;
+      }
+      .toolbar {
+        height: 64px;
+        background: var(--paper-blue-500);
+        width: 100%;
+      }
+      .main-content {
+        height: 1000px;
+        background: lightgrey;width: 100%;
+      }
+      app-drawer {
+        position: absolute;
+        top: 0;
+      }
+      /*app-drawer-layout {
+        height: auto;
+      }*/
+      app-drawer-layout[narrow] app-drawer {
+        --app-drawer-width: 100vw;
+      }
+      app-header-fullscreen-layout[header-scrolled] app-drawer {
+        position: fixed;
+        /*top: 64px;*/
+      }
+      paper-tabs {
+        height: 100%;
+        padding-left: 90px;
+        --paper-tabs-selection-bar: {
+          height: 4px;
+        };
+      }
+      paper-tab {
+        @apply(--layout-flex-none);
+        color: white;
+      }
+      paper-icon-button {
+        position: fixed;
+        top:6px;
+        left:24px;
+        z-index: 1000;
+        color: white;
+        height: 48px;
+        width: 48px;
+      }
+      /*#headerImage {
+        width: 100%;
+        height: 400px;
+        --iron-image-width: 100%;
+      }*/
+      p {
+        margin: 0;
+        padding: 100px;
+      }
+    </style>
+    <paper-icon-button icon="arrow-back"></paper-icon-button>
+    <app-header-fullscreen-layout id="layout" toolbar-stick-top header-parallax-scalar="0.2" initial-content-scroll="200">
+      <div class="header-content">
+        <mr-masonry-wall src-array="[[housing.src]]" on-header-image-loaded="_headerScroll"></mr-masonry-wall>
+      </div>
+      <div class="toolbar">
+        <paper-tabs selected="0">
+          <paper-tab>PHOTOS</paper-tab>
+          <paper-tab>DESCRPTION</paper-tab>
+          <paper-tab>ATOUTS</paper-tab>
+          <paper-tab>CARTE</paper-tab>
+          <paper-tab>AUTRE</paper-tab>
+        </paper-tabs>
+      </div>
+      <div class="main-content">
+        <app-drawer-layout narrow="{{narrow}}">
+          <app-drawer align="end" id="drawer" swipe-open>
+            drawer
+          </app-drawer>
+          <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam architecto beatae repellendus voluptatibus, repellat sequi, quos totam, itaque distinctio provident veniam debitis sunt saepe quam iure fugit accusantium ea rerum.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam architecto beatae repellendus voluptatibus, repellat sequi, quos totam, itaque distinctio provident veniam debitis sunt saepe quam iure fugit accusantium ea rerum.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam architecto beatae repellendus voluptatibus, repellat sequi, quos totam, itaque distinctio provident veniam debitis sunt saepe quam iure fugit accusantium ea rerum.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam architecto beatae repellendus voluptatibus, repellat sequi, quos totam, itaque distinctio provident veniam debitis sunt saepe quam iure fugit accusantium ea rerum.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam architecto beatae repellendus voluptatibus, repellat sequi, quos totam, itaque distinctio provident veniam debitis sunt saepe quam iure fugit accusantium ea rerum.</p>
+          </div>
+        </app-drawer-layout>
+      </div>
+    </app-header-fullscreen-layout>
+  </template>
+  <script>
+    Polymer({
+      is: 'mr-housing-page-new',
+
+      observers : [
+        '_narrowChanged(narrow)'
+      ],
+
+      listeners: {
+        'scroll': '_scrollHandler'
+      },
+
+      properties: {
+        housing: Object
+      },
+
+      _narrowChanged: function() {
+        this.updateStyles('--app-drawer-width');
+      },
+
+      _headerScroll: function(e) {console.log("prout");
+        // 
+          var headerScrollTop =  e.detail.headerHeight - window.innerHeight + 64;
+          this.$.layout.headerScrollTop = headerScrollTop+200*0.8;
+          // this.$.layout._scrollTop = this.$.layout._scrollTop + headerScrollTop;
+          
+          // this.$.layout.headerScrollTop = e.detail.headerHeight -window.innerHeight+64 +200;//-0.2*window.innerHeight;
+        // }, 1000)
+        // this.async(function() {
+        //   this.$.layout.headerScrollTop = 400;
+
+      }
+      
+    });
+  </script>
+</dom-module>

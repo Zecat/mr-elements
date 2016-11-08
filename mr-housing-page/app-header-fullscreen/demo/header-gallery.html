@@ -1,0 +1,139 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>header-gallery Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
+    <link rel="import" href="../../app-layout/app-scroll-effects/effects/resize-title.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../iron-image/iron-image.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+    <link rel="import" href="../../paper-styles/typography.html">
+    <link rel="import" href="../app-header-fullscreen.html">
+    <link rel="import" href="../effects/parallax-back.html">
+    <link rel="import" href="../effects/blend-back.html">
+    <link rel="import" href="demo-helpers/sample-content.html">
+    <link rel="import" href="demo-helpers/cat-grid-list.html">
+    <link rel="import" href="demo-helpers/demo-icons.html">
+  </head>
+  <body unresolved>
+
+  <template is="dom-bind" id="app">
+
+    <style is="custom-style" include="app-grid-style">
+
+      body {
+        margin: 0;
+        @apply(--paper-font-common-base);
+      }
+      .flex {
+        @apply(--layout-flex);
+      }
+      #header {
+        color: white;
+        z-index: 3;
+        position: relative;
+        --app-header-fullscreen-background: pink;
+        --app-header-fullscreen-front-layer: {
+          @apply(--layout-vertical);
+        };
+      }
+      #header[fullscreen] #bottomToolbar {
+        opacity: 0;
+      }
+      #bottomToolbar {
+        height: 200px;
+        z-index: 1;
+        transition: opacity 0.4s;
+      }
+      #header[fullscreen] paper-icon-button {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+      paper-icon-button{
+        color: white;
+        transition: background-color 0.4s;
+        border-radius: 50%;
+        background-color: transparent;
+      }
+      #stickyToolbar {
+        z-index: 1;
+      }
+      #headerImg {
+        width: 100%;
+        height: auto;
+        margin-bottom: -4px;
+      }
+      [condensed-title] {
+        margin-left: 12px;
+      }
+      #backLayer {
+        background-color: white;
+      }
+
+      @media all and (min-width: 600px) {
+        #bottomToolbar {
+          font-size: 34px;
+        }
+      }
+        
+    </style>
+
+    <app-header-fullscreen
+      id="header"
+      condenses
+      waterfall-shadow
+      fullscreen="{{fullscreen}}"
+      initial-content-scroll="200"
+      effects="parallax-back resize-title blend-back">
+
+      <app-toolbar id="stickyToolbar" id="frontFade">
+        <a href="index.html" tabindex="-1">
+          <paper-icon-button icon="demo:arrow-back"></paper-icon-button>
+        </a>
+        <span condensed-title>Check out the cats</span>
+        <paper-icon-button
+          icon="{{_getToggleFullscreenIcon(fullscreen)}}"
+          on-tap="_toggleFullscreen"></paper-icon-button>
+      </app-toolbar>
+
+      <div class="flex"></div>
+
+      <app-toolbar id="bottomToolbar">
+        <span main-title spacer>Check out the cats</span>
+      </app-toolbar>
+
+      <div id="backLayer" slot="back-layer">
+        <img id="headerImg" src="http://placekitten.com/1280/800">
+        <cat-grid-list></cat-grid-list>
+      </div>
+
+    </app-header-fullscreen>
+
+    <sample-content size="5"></sample-content>
+
+  </template>
+  
+  <script>
+    var app = document.getElementById('app');
+
+    app._toggleFullscreen = function() {
+      app.$.header.scrollToggleFullscreen();
+    }
+    app._getToggleFullscreenIcon = function(fullscreen) {
+      return fullscreen ? 'demo:close' : 'demo:pets';
+    }
+  </script>
+
+  </body>
+</html>

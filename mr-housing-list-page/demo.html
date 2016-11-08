@@ -13,22 +13,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>mr-elements Demo</title>
-    <script src="../../../webcomponentsjs/webcomponents-lite.min.js"></script>
-    <link rel="import" href="../../../iron-ajax/iron-ajax.html">
-    <link rel="import" href="../mr-housing-page.html">
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../../iron-ajax/iron-ajax.html">
+    <link rel="import" href="mr-housing-list-page.html">
   </head>
   <body unresolved>
 
-    <style is="custom-style">
-      body {
-        margin: 0;
-      }
-    </style>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
 
-    <template is="dom-bind">
-      <iron-ajax auto url="housing.json" last-response="{{housing}}"></iron-ajax>
-      <mr-housing-page housing="[[housing]]"></mr-housing-page>
-    </template>
+  <template is="dom-bind">
+    <iron-ajax auto url="housing-list.json" last-response="{{data}}"></iron-ajax>
+    <mr-housing-list-page data="{{data}}">
+      
+    </mr-housing-list-page>
+  </template>
 
   </body>
 </html>

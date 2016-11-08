@@ -15,20 +15,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <title>mr-elements Demo</title>
     <script src="../../../webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="../../../iron-ajax/iron-ajax.html">
-    <link rel="import" href="../mr-housing-page.html">
+    <link rel="import" href="../mr-reservation.html">
   </head>
   <body unresolved>
 
     <style is="custom-style">
       body {
         margin: 0;
+        background: var(--paper-grey-200);
+      }
+      mr-reservation {
+        width: 300px;
+        margin: auto;
+        height: 100vh;
       }
     </style>
 
-    <template is="dom-bind">
+    <!-- <template is="dom-bind">
       <iron-ajax auto url="housing.json" last-response="{{housing}}"></iron-ajax>
       <mr-housing-page housing="[[housing]]"></mr-housing-page>
-    </template>
+    </template> -->
+    <mr-reservation></mr-reservation>
 
   </body>
 </html>
